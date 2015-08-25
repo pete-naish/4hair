@@ -1,0 +1,18 @@
+<div class="asset-badge" data-for="{{asset_field}}">
+	<div class="asset-badge-thumb">
+		{{#if has_thumb}}
+		<img src="{{thumburl}}" width="{{thumbwidth}}" height="{{thumbheight}}" alt="Preview" />
+		{{/if}}
+	</div>
+	<div class="asset-badge-meta">
+		<div class="asset-badge-remove">
+			<label for="{{input_id}}_remove" class="inline">Remove</label> 
+			<input type="checkbox" class="check " id="{{input_id}}_remove" name="{{input_id}}_remove" value="1" />
+		</div>
+		<ul class="meta">
+			<li class="title">{{title}}</li>
+			<li>{{mime_display}}</li>
+			<li>{{width}} x {{height}} px @ {{display_filesize}}</li>
+		</ul>
+	</div>
+</div>

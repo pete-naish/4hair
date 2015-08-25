@@ -1,0 +1,22 @@
+<table class="list-asset">
+    <thead>
+        <tr>
+            <th class="first">{{Lang 'Name'}}</th>
+            <th></th>
+            <th>{{Lang 'Type'}}</th>
+            <th>{{Lang 'Dimensions'}}</th>
+            <th>{{Lang 'Size'}}</th>
+        </tr>
+    </thead>
+    <tbody>
+{{#each assets}}
+	<tr>
+		<td class="primary"><a class="list-asset-title" href="#" data-id="{{id}}">{{title}}</a></td>
+		<td class="asset-icon-cell"><span class="icon asset-icon asset-{{type}}"></span></td>
+		<td>{{mime_display}}</td>
+		<td>{{#if width}}{{width}} x {{height}}{{else}} - {{/if}}</td>
+		<td>{{display_filesize}}</td>
+	</tr>
+{{/each}}
+	</tbody>
+</table>

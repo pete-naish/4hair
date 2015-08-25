@@ -1,0 +1,10 @@
+{{#each assets}}
+	<div class="grid-asset asset-{{type}}{{#unless has_thumb}} asset-icon{{/unless}}" tabindex="0" data-id="{{id}}">
+		<div class="asset-meta{{#if has_thumb}} with-thumb{{/if}}"><span class="title">{{title}}</span></div>
+		{{#if has_thumb}}
+			<img class="thumb" src="{{thumburl}}" alt="{{title}}" width="{{thumbwidth}}" height="{{thumbheight}}" />
+		{{/if}}
+	</div>
+{{else}}
+	<p class="alert notice">{{Lang 'No matching assets found'}}</p>
+{{/each}}
