@@ -1,0 +1,29 @@
+  <!-- ENTRY BLOCK --> 
+  <div class="entry" id="<perch:content id="slug" type="slug" for="heading" />"> 
+      
+    <h3 class="center"><perch:content type="text" id="heading" label="Offer Title" required="true" title="true" order="1" /></h3> 
+      
+	<!-- ENTRY INFOS --> 
+      <div class="post_infos"> 
+          <div class="date_post cufon">Starts <perch:content id="offer_date" type="date" label="Offer Start Date" format="%A, %e %B %Y" order="2" /></div>
+					<div class="date_post_expiry cufon">Expires <perch:content id="offer_expiry_date" type="date" label="Offer Expiry Date" format="%A, %e %B %Y" order="3" /></div>
+          <br class="clear" /> 
+      </div> 
+	<!-- /ENTRY INFOS --> 
+      		<perch:if exists="image">
+    <img alt="<perch:content id="heading"/>" width="570" height="210" class="img_shd_590" src="<perch:content type="image" id="image" label="Image" width="570" height="210" help="Width: 570px Height: 210px" order="4" />" /> 
+    <perch:else />
+		<img src="/images/offer.jpg" alt="" class="img_shd_590" width="570" height="210" />
+		</perch:if>
+    <perch:content type="textarea" id="text" label="Offer Description" markdown="true" html="false" required="true" order="5" />
+    <div class="share">
+	
+	<div class="share-tw"><a href="http://twitter.com/share" class="twitter-share-button" data-url="http://4-hair.co.uk" data-text="<perch:content id="heading"/> - Expires <perch:content id="offer_expiry_date" format="%e/%m/%Y"/>" data-count="none" data-via="4_hair" data-related="BeautyBox120">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script></div>
+	
+	<div class="share-fb"><a href="http://www.facebook.com/dialog/feed?app_id=152070511548602&amp;link=http://4-hair.co.uk/offers&amp;picture=http://fbrell.com/f8.jpg&amp;name=<perch:content id="heading"/>&amp;caption=Fantastic%20offers%20from%204%20Hair&amp;redirect_uri=http://4-hair.co.uk/offers"><img src="/images/fb_share.png" alt="Share this offer on Facebook" /></a></div>
+	
+	</div>
+    <div class="separator"></div> 
+    
+</div> 
+  <!-- /ENTRY BLOCK -->

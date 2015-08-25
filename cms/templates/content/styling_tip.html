@@ -1,0 +1,20 @@
+<!-- Item block --> 
+<li title="Style-Tip" id="<perch:content id="slug" type="slug" for="headline" />">
+	<div class="thumbnail_item">
+		<perch:if exists="image">
+			<img src="<perch:content id="image" type="image" label="Image" width="268" height="175" help="Width: 268px Height: 175px" />" alt="<perch:content id="style-description" />" width="268" height="175" />
+		<perch:else />
+			<img src="/images/tip.gif" alt="" width="268" height="175" />
+		</perch:if>
+	</div> 
+  <div class="descriptif"> 
+ 		<div class="infos"> 
+    	<h4><perch:content id="headline" label="Headline" type="text" required="true" title="true" order="1" /></h4> 
+      <p class="item_short_text"><perch:content id="style-description" label="Style Description" type="text" required="true" order="2" /><br /></p> 
+   		<div class="share-tw"><a href="http://twitter.com/share" class="twitter-share-button" data-url="http://4-hair.co.uk" data-text="<perch:content id="headline"/>" data-count="none" data-via="4_hair" data-related="BeautyBox120">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script></div>
+			<div class="share-fb"><a href="http://www.facebook.com/dialog/feed?app_id=152070511548602&amp;link=http://4-hair.co.uk/styling-tips&amp;picture=http://fbrell.com/f8.jpg&amp;name=<perch:content id="headline"/>&amp;caption=Styling%20tips%20from%204%20Hair&amp;description=<perch:content id="style-description"/>&amp;redirect_uri=http://4-hair.co.uk/styling-tips"><img src="/images/fb_share.png" alt="Share this styling tip on Facebook" /></a></div>
+			<a href="<perch:content id="video" label="Video Link" type="text" required="true" order="3" />" rel="prettyPhoto[Style-Tip]" title="<perch:content id="style-description" />" class="zoom"><img src="images/play.png" width="24" height="24" alt="<perch:content id="headline" />" /><span class="inv">play</span></a> 
+    </div> 
+  </div> 
+</li> 
+<!-- /Item block -->

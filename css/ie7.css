@@ -1,0 +1,143 @@
+/* HACK IE7 */
+
+#top_menu ul ul{
+			background:#181818;
+			display:none;
+			padding:10px;
+			font-size:11px;
+			letter-spacing:1px;
+			text-align:left;
+			width:180px;
+			position:absolute;
+			top:27px;
+			left:0;
+			z-index:10000;
+			-moz-border-radius: 0 0 3px 3px;
+			-webkit-border-radius: 0 0 3px 3px;
+			-khtml-border-radius: 0 0 3px 3px;
+			border-radius: 0 0 3px 3px;
+		}
+	
+
+	#location{
+		position:relative;
+		z-index:2;
+	}
+	#top_logo{
+		z-index:3 !important;
+	}
+	
+	
+	/* -------------------------------------------------------------------------------------- SIDEBAR */
+	
+	#sidebar{
+		display:block; float:left;
+		width:290px;
+		margin:0 10px;
+	}
+	#sidebar .container{
+		background:url(/images/sidebar_bg_IE7.png) repeat-y left top;
+		padding:10px 0 10px 20px;
+	}
+	.light #sidebar .line{
+		background:url(/images/sidebar_border_IE7.png);
+		height:1px;
+		display:block;
+	}
+	.bottom_line{
+		display:block;
+		background:url(/images/bottom_sidebar_IE7.png) no-repeat left top;
+		height:40px;
+	}
+	
+	#sidebar ul{}
+	#sidebar li{
+		background:url(/images/list_bg_sidebar.png) no-repeat left bottom;
+	}
+	
+	#sidebar li a:hover{
+		background:url(/images/sidebar_arrow_black.png) no-repeat left 50%;
+	}
+
+	#sidebar .separator{
+		background:url(/images/separator_sidebar.png) repeat-x !important;
+		height:5px;
+		display:block;
+		margin:20px 0 !important;
+	}
+/* -------------------------------------------------------------------------------------- SIDEBAR LEFT */
+	
+	#sidebar_left{
+		display:block; float:left;
+		width:290px;
+		margin:0 10px;
+	}
+	#sidebar_left .container{
+		background:url(/images/sidebar_left_bg_IE7.png) repeat-y right top;
+		padding:10px 20px 10px 0;
+	}
+	.light #sidebar_left .line{
+		background:url(/images/sidebar_left_border_IE7.png) 2px top;
+		height:1px;
+		display:block;
+	}
+	#sidebar_left .bottom_line{
+		display:block;
+		background:url(/images/bottom_sidebar_left_IE7.png) no-repeat right top;
+		height:40px;
+	}
+	
+	#sidebar_left ul{}
+	#sidebar_left li{
+		background:url(/images/list_bg_sidebar.png) no-repeat left bottom;
+	}
+	
+	#sidebar_left li a:hover{
+		background:url(/images/sidebar_arrow_black.png) no-repeat left 50%;
+	}
+
+	#sidebar_left .separator{
+		background:url(/images/separator_sidebar.png) repeat-x !important;
+		height:5px;
+		display:block;
+		margin:20px 0 !important;
+	}
+	
+	
+	#sidebar_left li a{
+		background:url(/images/sidebar_arrow_grey.png) no-repeat left 50% !important;
+		display:block;
+		padding:6px 3px 5px 20px;
+		color:#666;
+	}
+	
+	#sidebar li a{
+		background:url(/images/sidebar_arrow_grey.png) no-repeat left 50% !important;
+		display:block;
+		padding:6px 3px 5px 20px;
+		color:#666;
+	}
+	
+	
+		#top_menu ul ul a{
+			display:block !important;
+			width:175px !important;
+		}
+		
+	#top_menu ul ul ul{
+			background:#181818;
+			display:none;
+			padding:10px;
+			font-size:11px;
+			letter-spacing:1px;
+			text-align:left;
+			width:180px;
+			position:absolute;
+			top:0px;
+			left:175px !important;
+			z-index:10001;
+			-moz-border-radius: 0 3px 3px 3px;
+			-webkit-border-radius: 0 3px 3px 3px;
+			-khtml-border-radius: 0 3px 3px 3px;
+			border-radius: 0 3px 3px 3px;
+		}

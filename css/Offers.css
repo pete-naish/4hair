@@ -1,0 +1,5 @@
+div:target,
+li:target {
+	border-bottom:none;
+	border-top:2px solid #008000;
+}

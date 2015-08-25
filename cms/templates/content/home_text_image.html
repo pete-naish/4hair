@@ -1,0 +1,29 @@
+<!-- Block Icon -->
+<div class="block_icon">
+    <h4>
+			<perch:if exists="link">
+				<a href="<perch:content type="text" id="link" label="Link" order="2" />" title="<perch:content id="heading"/>">
+			</perch:if>
+			<perch:content type="text" id="heading" label="Heading" required="true" title="true" order="1" />
+			<perch:if exists="link">
+				</a>
+			</perch:if>
+		</h4>
+
+			<perch:if exists="link">
+				<a href="<perch:content id="link" />" title="<perch:content id="heading"/>">
+			</perch:if>
+			<perch:if exists="image">
+			<img src="<perch:content type="image" id="image" label="Image" width="128" height="128" help="Width: 128px Height: 128px" order="3" />" alt="<perch:content id="heading"/>" width="128" height="128" class="img_left_marg_20" />
+			</perch:if>
+			<perch:if exists="link">
+				</a>
+			</perch:if>
+			<perch:content type="textarea" id="text" label="Content" html="false" markdown="true" required="true" order="4" />
+			<perch:if exists="video">
+			<iframe width="370" height="225" src="<perch:content type="text" id="video" label="Video Link" required="false" order="5"/>" frameborder="0" allowfullscreen></iframe>
+			</perch:if>
+			<perch:content type="textarea" id="text-after" label="Content After Video" html="false" markdown="true" required="false" order="6" />
+
+</div>
+<!-- /Block Icon -->

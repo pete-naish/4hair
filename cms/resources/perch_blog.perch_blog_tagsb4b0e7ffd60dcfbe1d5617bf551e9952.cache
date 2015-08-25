@@ -1,0 +1,12 @@
+
+<h4>Tags</h4>
+<ul class="byTag">
+
+    <li><a href="archive.php?tag=blah" rel="tag">blah <!-- (1) --></a></li>
+
+    <li><a href="archive.php?tag=hair" rel="tag">hair <!-- (1) --></a></li>
+
+    <li><a href="archive.php?tag=test" rel="tag">test <!-- (1) --></a></li>
+
+    <li><a href="archive.php?tag=whatever" rel="tag">whatever <!-- (1) --></a></li>
+</ul>

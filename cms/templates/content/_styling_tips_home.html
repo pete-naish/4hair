@@ -1,0 +1,13 @@
+<div class="col_one_three">
+	
+    <div class="frame_image_1col" id="<perch:content id="slug" />">
+	<perch:if exists="image">
+	<a href="<perch:content id="video" />" title="<perch:content id="style-description" />" rel="prettyPhoto[Portfolio1]" ><img src="<perch:content id="image"/>" alt="<perch:content id="imagedesc" />" width="268" height="175" class="fadeload" /></a>
+			<perch:else />
+			<a href="<perch:content id="video" />" title="<perch:content id="style-description" />" rel="prettyPhoto[Portfolio1]" ><img class="fadeload" src="/images/tip.gif" alt="" width="268" height="175" /></a>
+			</perch:if>
+	</div>
+    <h4 class="center"><perch:content id="headline" /></h4>
+    <p><perch:content id="style-description" /></p>
+    <p><a href="<perch:content id="video" />" title="<perch:content id="style-description" />" class="readmore_arrow" rel="prettyPhoto[Portfolio]" ><span class="inv"><perch:content id="style-description" /></span></a></p>
+</div>

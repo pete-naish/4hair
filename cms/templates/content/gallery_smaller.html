@@ -1,0 +1,2 @@
+<perch:if exists="link">
+<a href="<perch:content type="text" id="link" label="Image Link" required="false" order="3"/>" title="<perch:content id="alt"/>"></perch:if><img src="<perch:content type="image" id="image" label="Image" width="880" height="310" help="Width: 880px Height: 310px" order="1" />" alt="<perch:content type="text" id="alt" label="Description" required="true" title="true" order="2" />" width="880" height="310" /><perch:if exists="link"></a></perch:if>

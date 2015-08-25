@@ -1,0 +1,31 @@
+<perch:before>
+<ul class="hfeed"></perch:before>
+    <li class="hentry">
+        <h4><a href="/blog/post?s=<perch:blog id="postSlug" />" rel="bookmark"><perch:blog id="postDateTime" format="%d/%m/%y" /></a></h4>
+        <h3><a href="/blog/post?s=<perch:blog id="postSlug" />" rel="bookmark"><perch:blog id="postTitle" /></a></h3>
+				<div class="description entry-summary">
+        <perch:blog id="excerpt" encode="false" />
+        </div>
+        <perch:if exists="image"><a href="/blog/post?s=<perch:blog id="postSlug" />" rel="bookmark" title="<perch:blog id="postTitle" />"><img src="<perch:blog id="image" type="image" width="485" />" alt="<perch:blog id="postTitle" />" /></a></perch:if>
+				<perch:if exists="YouTube_Video_Code">
+					<iframe class="yt" title="YouTube video player" width="485" height="290" src="http://www.youtube.com/embed/<perch:blog id="YouTube_Video_Code"/>" frameborder="0"></iframe>
+				</perch:if>
+        <a href="/blog/post?s=<perch:blog id="postSlug" />#disqus_thread" rel="bookmark"></a>
+    </li>
+<perch:after>
+    </ul>
+
+    <perch:if exists="paging">
+        <div class="paging">
+            Page <perch:blog id="current_page" /> of <perch:blog id="number_of_pages" /><br/><br/>
+            <perch:if exists="not_first_page">
+                <a href="<perch:blog id="prev_url" encode="false" />">Previous</a>
+            </perch:if>
+            <perch:if exists="not_last_page">
+                <a href="<perch:blog id="next_url" encode="false" />">Next</a>
+            </perch:if>
+        </div>
+    </perch:if>
+</perch:after>
+
+

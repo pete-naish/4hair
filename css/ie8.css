@@ -1,0 +1,8 @@
+/*  HACK FOR IE8 */
+.bigline{
+		font-size:15px;
+		font-weight:bold;
+		text-shadow:none;
+		filter:none;
+		letter-spacing:1px;
+	}

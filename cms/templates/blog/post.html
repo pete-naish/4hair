@@ -1,0 +1,17 @@
+<div class="hentry">
+	<h3><perch:blog id="postTitle" /></h3>
+
+    <perch:if exists="image">
+        <div><img src="<perch:blog id="image" type="image" width="485" label="Post image" help="485px wide, any height" />" alt="<perch:blog id="postTitle" />" /></div>
+    </perch:if>
+		<perch:if exists="YouTube_Video_Code">
+			<iframe class="yt" title="YouTube video player" width="485" height="290" src="http://www.youtube.com/embed/<perch:blog id="YouTube_Video_Code" type="text" label="YouTube Video Code" help="e.g. WFXYU5PHfnY - i.e. just the code after http://www.youtube.com/watch?v=" />" frameborder="0"></iframe>
+		</perch:if>
+    <div class="description entry-content">
+    	<perch:blog id="postDescHTML" encode="false" editor="markitup" textile="true" />
+    </div>
+</div>
+<h5>Posted on <perch:blog id="postDateTime" format="%d/%m/%y" /></h5>
+
+<perch:blog id="excerpt" type="textarea" label="Excerpt" editor="markitup" textile="true" order="1" suppress="true" size="m" />
+<perch:blog id="image" type="image" width="485" suppress="true" />

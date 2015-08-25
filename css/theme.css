@@ -1,0 +1,100 @@
+/*
+
+CUSTOM CSS FOR THE NEWORKER THEME
+
+Color : Violet 6 #62396e
+
+*/
+#slider_home{
+	background:url(images/main_color.png) repeat-x;
+	width:100%;
+}
+#slider_home .content{
+	background:url(images/main_color_content.png) no-repeat 50% top;
+	height:460px;
+	margin:0 auto; padding:60px 0 0 0;
+	width:960px;
+}
+#location{
+	background:url(images/Innerpage_color_bg.png) repeat-x left top;
+	width:100%;
+}
+#location .content{
+	background:url(images/Innerpage_bg_content.png) no-repeat 50% top;
+	height:170px;
+	margin:0 auto;
+	width:960px;
+	color:#FFF;
+}
+#location .content h2{
+	font-size:45px !important;
+	margin:0 !important; padding:0 0 0 30px;
+	text-transform:uppercase;
+	line-height:105px !important;
+	height:110px;
+	overflow:hidden;
+	width:94%;
+}
+#main_bottom{
+	background:url(images/main_bottom_color.png) repeat-x;
+	width:100%;
+}
+#main_bottom .content{
+	background:url(images/main_bottom_color_content.png) no-repeat 50% top;
+	height:7px;
+	margin:0 auto;
+	width:960px;
+}
+
+	#sidebar li a:hover{
+		color:#62396e;
+	}
+	
+	
+#gotop{
+	background:url(images/footer_color.png) repeat-x;
+	width:100%;
+}
+#gotop .content{
+	background:url(images/footer_color_content.png) no-repeat 50% top;
+	height:10px;
+	margin:0 auto;
+	width:960px;
+}
+
+.menu a:hover,
+#top_menu ul li a.current{ color:#ccc !important; border-bottom:1px solid #62396e;}
+.sub-menu a:hover{ color:#FFF !important; border-bottom:none;}
+
+#main a{ color:#62396e; font-weight:bold;}
+#main a:hover{ color:#AAA}
+
+#portfolio-filter li a.selected{ color:#62396e;}
+			
+#main h3 a{ color:#333;}
+#main h3 a:hover{ color:#62396e;}
+
+#footer a{ color:#FFF;}
+#footer a:hover{ color:#62396e;}
+
+
+	#twitterUpdate a{ color:#FFF;}
+	#twitterUpdate a:hover{ color:#62396e;}
+	
+	
+	.flickr_gallery a:hover{ background:#62396e;}
+
+#logo_bottom a {
+	color:#333;
+}
+
+#main .flash a {
+	border-color:#62396e;
+	background-color:#CCABD6;
+}
+
+#main .flash a:hover {
+	color:#333;
+	border-color:#62396e;
+	background-color:#E6CAEE;
+}

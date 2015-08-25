@@ -1,0 +1,11 @@
+
+<h4>Tags</h4>
+<div class="meta">
+<div class="tags">
+<ul class="byTag">
+
+    <li><a href="archive.php?tag=blah" rel="tag">blah</a></li>
+
+</ul>
+   </div>
+</div>

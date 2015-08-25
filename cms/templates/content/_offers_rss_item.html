@@ -1,0 +1,17 @@
+<item>
+    <title><perch:content id="heading" /></title>
+    <link>http://4-hair.co.uk/offers#<perch:content id="slug" /></link>
+    <description>
+        <![CDATA[
+						<perch:if exists="image">
+            <a href="http://4-hair.co.uk/offers#<perch:content id="slug" />"><img src="http://4-hair.co.uk<perch:content id="image">" alt="<perch:content id="heading" />" /></a>
+						<perch:else />
+						<a href="http://4-hair.co.uk/offers#<perch:content id="slug" />"><img src="http://4-hair.co.uk/images/offer.jpg" alt="<perch:content id="heading" />" width="570" height="210" /></a>
+						</perch:if>
+						<p><perch:content id="text" markdown="true" /></p>
+						<p>Starts <perch:content id="offer_date" /></p>
+						<p>Expires <perch:content id="offer_expiry_date" /></p>
+        ]]>
+    </description>
+		<guid>http://4-hair.co.uk/offers#<perch:content id="slug" /></guid>
+</item>

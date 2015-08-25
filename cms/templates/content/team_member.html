@@ -1,0 +1,18 @@
+<!-- Item block -->
+<li title="<perch:content id="member" />">
+ 		<div class="thumbnail_item">
+	<perch:if exists="image">
+	<img src="<perch:content type="image" id="image" label="Image" width="268" height="175" help="Width: 268px Height: 175px" order="2" />" alt="<perch:content id="member"/>" width="268" height="175" />
+	<perch:else />
+	<img src="/images/team.gif" alt="" width="268" height="175" />
+	</perch:if>
+	</div>
+      <div class="descriptif">
+	<h4><perch:content id="member" type="text" label="Team Member" html="false" title="true" required="true" order="1"/></h4>
+      	<div class="infos">
+              
+              <perch:content type="textarea" id="description" label="Team Member Description" html="false" markdown="true" required="true" order="3" />
+          </div>
+      </div>
+</li>
+<!-- /Item block -->

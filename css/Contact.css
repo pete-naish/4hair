@@ -1,0 +1,215 @@
+/* Contact Form */
+
+#acf-area {
+	float:left;
+	width:538px;
+	z-index:55;
+	padding:30px 0 12px 0;
+}
+
+#ajax-contact-form {
+	margin-bottom:0 !important;
+}
+
+#ajax-contact-form fieldset {
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+
+#ajax-contact-form div {
+	margin-bottom: 10px;
+}
+
+#acf-note {
+	display: none;
+	color:#1a1a1a;
+}
+
+.notification_ok {
+	margin: 0 0 10px;
+	background: #c4e8ff url(/images/contact/icon-button-ok.png) no-repeat scroll 13px 50%;
+	height: auto;
+	width: 510px;
+	padding: 8px 0px 8px 45px;
+	text-align: left;
+}
+.notification_error {
+	background: url(/images/contact/icon-dialog-error.png) no-repeat scroll 10px 50% #FFAAAA;
+	height: auto;
+	margin: 0 0 10px;
+	padding: 8px 0 8px 38px;
+	text-align: left;
+	width: 510px;
+}
+
+.hide {
+	display: none;
+}
+
+div.escts {
+	padding: 10px 0;
+}
+
+#acf-fields label {
+	display: block;
+	float:left;
+	width:100px;
+	font-size:13px;
+	font-family:helvetica,arial, sans-serif;
+/*	height:35px;*/
+/*	line-height:0;*/
+	margin-left: 20px;
+	clear:left;
+}
+#acf-fields label.escts {
+	width: 130px;
+	padding-left: 0px;
+	margin: 8px 19px 8px 1px;
+	text-align: right;
+	float: none;
+}
+
+#acf-fields textarea {
+	overflow: auto;
+	resize: none;
+}
+
+#acf-fields input.required:focus, #acf-fields textarea:focus, #acf-fields select:focus {
+	border-color: #3CA2D1;
+}
+
+/*#acf-fields input.required, textarea, select {
+	border: 1px solid #ccc;
+}*/
+
+#acf-fields input.required, #acf-fields select, #acf-fields textarea {
+	border: 1px solid #CCCCCC;
+	display: block;
+	font-family: helvetica,arial,sans-serif;
+	font-size: 13px;
+	overflow: auto;
+	overflow-y:hidden;
+	padding: 8px;
+	height:15px;
+	width: 400px;
+}
+
+#acf-fields select,
+#acf-fields textarea {
+	height:auto !important;
+}
+
+
+/*#acf-fields textarea {
+	width:auto;
+}*/
+
+#acf-fields select {
+	width:418px;
+}
+
+/*#acf-fields input[type="checkbox"] {
+	margin: 1px 1px 0 0;
+	float: left;
+}*/
+
+#acf-fields input.error,
+#acf-fields select.error,
+#acf-fields textarea.error {
+	border: 1px solid #ff0000;
+}
+
+
+#acf-fields input.ok,
+#acf-fields select.ok,
+#acf-fields textarea.ok {
+	border: 1px solid #A6CB00;
+}
+
+#acf-fields div.error {
+	font-size: 12px;
+	color: #ff0000;
+	/*border-bottom: 2px solid #ff0000;*/
+	margin: 2px 0px 9px 120px;
+	width: 400px;
+	text-align: left;
+	padding: 0px;
+	font-family:arial, helvetica, sans-serif;
+}
+
+#acf-fields .button {
+	cursor: pointer;
+	width: 135px;
+	background: white url(/images/contact/icon-submit.png) no-repeat scroll 11px 50%;
+	border: 1px solid #ccc;
+	color: #1a1a1a;
+	padding: 6px 1px 8px 25px;
+	float:right;
+	margin-top: 10px;
+}
+
+#ajax-loading {
+	margin: 40px 0 0 90px;
+	padding: 0 0 0 29px;
+	display: none;
+	background: transparent url(/images/contact/icon-ajax-loader.gif) no-repeat scroll 8px 66%;
+	margin-bottom: 0;
+}
+
+#icon-refresh {
+	margin-left: 5px;
+	float:left;
+}
+
+#captcha {
+	border: 1px solid #ccc;
+	float:left;
+}
+
+#captcha_div {
+	float: left;
+	width:130px;
+}
+
+#input_box_div {
+	margin-bottom: 0 !important;
+}
+
+#sc_error {
+	float: left;
+	margin-bottom: 0 !important;
+}
+
+#security_code {
+	width: 260px !important;
+}
+
+#input_box_div {
+	float: right;
+}
+
+#verified {
+	background: url(/images/contact/icon-tick-circle-frame.png) no-repeat scroll 0 47% transparent;
+	color:#333;
+	margin: 0 0 0;
+	padding: 2px 0 0 23px !important;
+	min-height: 10px !important;
+}
+#verified .ok {
+	margin: 0px;
+}
+
+#sec_div {
+	float: left;
+}
+
+#sec_div_one {
+	overflow:auto;
+}
+
+#sec_div_two {
+	float: left;
+	display: none;
+	margin-left: 122px !important;
+}

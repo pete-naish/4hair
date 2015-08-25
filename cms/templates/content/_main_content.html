@@ -1,0 +1,7 @@
+<div class="threefourwidth">
+	<h2><perch:content id="Heading" type="text" label="Heading" html="false" required="true" title="True" order="1"/></h2>
+	<perch:if exists="image">
+	<img class="<perch:content id="image_float" type="select" label="Float Image" options="left, right" allowempty="false" required="false" />" src="<perch:content type="image" id="image" label="Image" width="690" order="2" />" alt="<perch:content type="text" id="alt" label="Image Description" required="false" order="3"/>" />
+	</perch:if>
+	<perch:content id="body" type="textarea" label="Body" markdown="true" editor="markitup" html="true" required="true" />
+</div>

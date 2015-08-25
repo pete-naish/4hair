@@ -1,0 +1,32 @@
+<h2 class="center">
+	<perch:if exists="main-link">
+		<a href="<perch:content id="main-link" html="false" type="text" id="main-link" label="Main Link" order="2" />" title="<perch:content id="Heading"/>">
+	</perch:if>
+	<perch:content id="Heading" type="text" label="Heading" html="false" required="true" title="True" order="1"/>
+	<perch:if exists="main-link">
+		</a>
+	</perch:if>
+</h2>  
+  
+<div class="separator"></div> 
+         
+<div class="col_full"> 
+	<perch:if exists="video">
+	<div class="video">
+		<iframe width="350" height="197" src="<perch:content type="text" id="video" label="Video Link" required="false" order="4"/>" frameborder="0" allowfullscreen></iframe>
+		<div class="caption"><perch:content type="textarea" id="video-text" label="Video Description" markdown="true" html="false" required="false" order="5" /></div>
+	</div>
+	</perch:if>
+	<perch:if exists="tagline">
+	<h4>
+		</perch:if>
+		<perch:content id="tagline" type="text" label="Tagline" html="false" required="false" order="2"/>
+		<perch:if exists="tagline">
+	</h4> 
+	</perch:if>
+  <perch:content type="textarea" id="text" markdown="true" label="Content" html="false" required="true" order="3" />
+
+</div> 
+    
+<br class="clear" />
+      
