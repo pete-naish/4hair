@@ -1,9 +1,9 @@
 <?php 
 	$page_title = "Contact";
 	$custom_css = "y";
-	include 'contact-app/headers.php';
-	include('head.php');
-	include('top.php');
+	include 'inc/contact-app/headers.php';
+	include('inc/head.php');
+	include('inc/top.php');
 ?>
 <div id="address" class="hide"><?php perch_content('Address'); ?></div>
 <!-- SLIDER -->
@@ -36,7 +36,7 @@
       
                         
                         <!-- Form --> 
-												<?php include 'contact-form.php'; ?>
+												<?php include 'inc/contact-form.php'; ?>
       
     </div> 
     <!-- /Left Content --> 
@@ -52,11 +52,11 @@
 					<div class="separator"></div>
 					<h4 id="opening-hours">Opening Hours</h4>
 					<?php
-					include('opening-hours.php');
+					include('inc/opening-hours.php');
 					?>
         <div class="separator"></div> 
 				<?php
-				include('social.php');
+				include('inc/social.php');
 				?>
       </div> 
       <!-- /container --> 
@@ -70,5 +70,5 @@
 </div> 
 <!-- /MAIN -->
 <?php
-include('footer.php');
+include('inc/footer.php');
 ?>

@@ -1,7 +1,7 @@
 <?php 
 	$page_title = "Mens";
-	include('head.php');
-	include('top.php');
+	include('inc/head.php');
+	include('inc/top.php');
 ?>
 
 <!-- LOCATION -->
@@ -33,5 +33,5 @@
 </div> 
 <!-- /MAIN -->
 <?php
-include('footer.php');
+include('inc/footer.php');
 ?>

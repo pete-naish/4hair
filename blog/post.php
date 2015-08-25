@@ -1,8 +1,8 @@
 
 <?php 
 	$blog_title = "Blog";
-	include('head.php');
-	include('top.php');
+	include('../inc/head.php');
+	include('../inc/top.php');
 ?>
 	
 <!-- LOCATION -->
@@ -94,5 +94,5 @@
 </div> 
 
 <?php
-include('footer.php');
+include('../inc/footer.php');
 ?>

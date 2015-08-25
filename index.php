@@ -1,7 +1,7 @@
 <?php 
 	$page_title = "Home";
-	include('head.php');
-	include('top.php');
+	include('inc/head.php');
+	include('inc/top.php');
 ?>
 
 <!-- SLIDER -->
@@ -77,5 +77,5 @@
 </div>
 <!-- /MAIN -->
 <?php
-include('footer.php');
+include('inc/footer.php');
 ?>

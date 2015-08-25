@@ -1,7 +1,7 @@
 <?php 
 	$page_title = "Team";
-	include('head.php');
-	include('top.php');
+	include('inc/head.php');
+	include('inc/top.php');
 ?>
 
 
@@ -48,5 +48,5 @@
 </div>
 <!-- /MAIN -->
 <?php
-include('footer.php');
+include('inc/footer.php');
 ?>

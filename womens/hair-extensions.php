@@ -1,8 +1,8 @@
 <?php 
 	$page_title = "Hair Extensions";
 	$page_type = "Womens";
-	include('head.php');
-	include('top.php');
+	include('../inc/head.php');
+	include('../inc/top.php');
 ?>
 
 <!-- LOCATION -->
@@ -32,7 +32,7 @@
 	    </div>
     <!-- /Left Content --> 
     <!-- Sidebar --> 
-<?php include('womens-rhs.php'); ?>
+<?php include('../inc/womens-rhs.php'); ?>
     <!-- /Sidebar --> 
     <br class="clear" /> 
     <!-- /Main content --> 
@@ -41,5 +41,5 @@
 </div> 
 <!-- /MAIN -->
 <?php
-include('footer.php');
+include('../inc/footer.php');
 ?>

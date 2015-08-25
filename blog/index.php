@@ -1,7 +1,7 @@
 <?php 
 	$page_title = "Blog";
-	include('head.php');
-	include('top.php');
+	include('../inc/head.php');
+	include('../inc/top.php');
 ?>
 	
 
@@ -72,5 +72,5 @@
     }());
     </script>
 <?php
-include('footer.php');
+include('../inc/footer.php');
 ?>

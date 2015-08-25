@@ -1,8 +1,8 @@
 <?php 
 	$page_title = "Offers";
 	$custom_css ="y";
-	include('head.php');
-	include('top.php');
+	include('inc/head.php');
+	include('inc/top.php');
 ?>
 
 <!-- LOCATION -->
@@ -36,7 +36,7 @@
 			</ul>
 			<div class="separator"></div>
  				<?php
-				include('social.php');
+				include('inc/social.php');
 				?>
 				<?php perch_content('Sidebar Video'); ?>
 	      </div>
@@ -55,5 +55,5 @@
 </div> 
 <!-- /MAIN -->
 <?php
-include('footer.php');
+include('inc/footer.php');
 ?>
