@@ -15,6 +15,11 @@ class PerchAPI_HTML
         $this->Lang = $Lang;
     }
     
+    public function set_lang($Lang)
+    {
+        $this->Lang = $Lang;
+    }
+
     public function title_panel_start()
     {
     }
@@ -36,8 +41,6 @@ class PerchAPI_HTML
     public function main_panel_start()
     {
 		include (PERCH_PATH.'/core/inc/main_start.php');
-	
-        //return '<div id="main-panel"><div class="inner">';
     }
     
     public function main_panel_end()
@@ -221,15 +224,184 @@ class PerchAPI_HTML
     
     
     
-    public function encode($string)
+    public function encode($string, $quotes=false, $double_encode=false)
     {
-        return PerchUtil::html($string);
+        return PerchUtil::html($string, $quotes, $double_encode);
     }
 
 	public function subnav($CurrentUser, $opts) 
 	{  
 		return PerchUtil::subnav($CurrentUser, $opts, $this->Lang);
 	}
-}
 
-?>
+    public function listing($rows, $headings, $values, $paths, $privs)
+    {
+        $s = '';
+        if (PerchUtil::count($rows)) {
+
+            $CurrentUser = $privs['user'];
+            $edit_link   = false;
+            if ($privs['edit']===false || ($CurrentUser && $CurrentUser->has_priv($privs['edit']))) {
+                $edit_link = true;
+            }
+
+
+            $s .= '<table class="d">
+                    <thead>
+                        <tr>';
+            foreach($headings as $heading) {
+                $s .= '<th>'.$this->Lang->get($heading).'</th>';
+            }
+            $s .= '     <th class="action last"></th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+            
+
+            foreach($rows as $row) {
+
+                if (is_object($row)) {
+                    $row_array = $row->to_array();
+                }
+
+                $i = 0;
+
+                $s.= '<tr>';
+
+                foreach($values as $val) {
+                    if ($i==0) {
+                        $s .= '<td class="primary">';
+                        if ($edit_link) $s .= '<a href="'.$paths['edit'].'/?id='.$row->id().'">';
+                        $s .= (isset($row_array[$val]) ? $row_array[$val] : $row->$val());
+                        if ($edit_link) $s .= '</a>';
+                        $s .= '</td>';
+                    }else{
+                        $s .= '<td>';
+
+                        // link?
+                        if (strpos($val, '/')!==false) {
+                            
+                            if ($edit_link) $s .= '<a href="'.$val.'/?id='.$row->id().'">';
+                                $s .= $headings[$i];
+                            if ($edit_link) $s .= '</a>';
+                        
+                        }else{
+                            $v_v = (isset($row_array[$val]) ? $row_array[$val] : $row->$val());
+                            if (is_array($v_v) && isset($v_v['value'])) {
+                                $s .= $v_v['value'];
+                            }else{
+                                $s .= $v_v;
+                            }    
+                        }
+
+                        
+                        $s .= '</td>';
+                    }
+
+                    $i++;
+                }
+
+                if ($privs['delete']===false || ($CurrentUser && $CurrentUser->has_priv($privs['delete']))) {
+                    if (isset($privs['not-inline'])) {
+                        $s .= '<td><a href="'.$paths['delete'].'/?id='.$row->id().'" class="delete">'.$this->Lang->get('Delete').'</a></td>';
+                    }else{
+                        $s .= '<td><a href="'.$paths['delete'].'/?id='.$row->id().'" class="delete inline-delete">'.$this->Lang->get('Delete').'</a></td>';    
+                    }
+                    
+                }else{
+                    $s .= '<td></td>';
+                }
+                $s .= '</tr>';               
+            }
+
+            
+
+            $s .= '   </tbody>
+                    </table>';
+        }
+        return $s;
+    }  
+
+    public function smartbar()
+    {
+        $items  = func_get_args();
+        $s = '<ul class="smartbar">';
+        foreach($items as $item) {
+            $s .= $item;
+        }
+        $s .= '</ul>';
+
+        return $s;
+    }
+
+    public function smartbar_breadcrumb()
+    {
+        $items  = func_get_args();
+        $active = array_shift($items);
+        $s = '';
+
+        if (PerchUtil::count($items)) {
+            if ($active) {
+                $s .= '<li class="selected">';
+            }else{
+                $s .= '<li>';
+            }
+            $s .= '<span class="set">';
+
+            $links = array();
+
+            for($i=0; $i<count($items); $i++) {
+                $item = $items[$i];
+                if ($i==count($items)-1) {
+                    // last item
+                    $link = '<a';
+                }else{
+                    $link = '<a class="sub"';
+                }
+
+                $link .= ' href="'.PerchUtil::html($item['link'], true).'">';
+                $link .= PerchUtil::html($item['label']);
+                $link .= '</a>';
+
+                $links[] = $link;
+            }
+
+            $s .= implode('<span class="sep icon"></span>', $links);
+
+            $s .= '</span>';
+            $s .= '</li>';
+        }      
+
+        return $s;
+    }
+
+    public function smartbar_link($active, $item, $end=false)
+    {
+        $s = '<li';
+
+        $class = array();
+
+        if ($active) $class[] = 'selected';
+        if ($end) $class[] = 'fin';
+
+        if (count($class)) {
+            $s.= ' class="'.implode(' ', $class).'"';
+        }
+
+        $s .= '>';
+        $s .= '<a ';
+
+        if (isset($item['class'])) {
+            $s.=  ' class="'.$item['class'].'"';
+        }
+
+        $s .= 'href="'.PerchUtil::html($item['link'], true).'">';
+        $s .= PerchUtil::html($item['label']);
+        $s .= '</a>';
+
+        $s .= '</li>';
+
+        return $s;
+    }
+}

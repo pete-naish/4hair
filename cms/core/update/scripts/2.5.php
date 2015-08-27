@@ -49,7 +49,9 @@
 
     ";
 
-    if (PerchUtil::count($DB->get_rows('SHOW TABLES LIKE \''.PERCH_DB_PREFIX.'content_resources\''))) {
+    if (PerchUtil::count($DB->get_rows('SHOW TABLES LIKE \''.PERCH_DB_PREFIX.'resource_log\''))==0) {
+
+      if (PerchUtil::count($DB->get_rows('SHOW TABLES LIKE \''.PERCH_DB_PREFIX.'content_resources\''))==1) {
 
             $sql .= "
 
@@ -65,9 +67,11 @@
 
             ALTER TABLE `__PREFIX__resource_log` ADD INDEX `idx_fk` (`itemFK`, `itemRowID`);
 
-            ALTER TABLE `__PREFIX__resource_log` ADD UNIQUE INDEX `idx_uni` (`appID`, `itemFK`, `itemRowID`, `resourceID`);
+            ALTER IGNORE TABLE `__PREFIX__resource_log` ADD UNIQUE INDEX `idx_uni` (`appID`, `itemFK`, `itemRowID`, `resourceID`);
 
             ";
+
+        }
 
     }
 
@@ -78,18 +82,65 @@
       `logID` int(10) unsigned NOT NULL AUTO_INCREMENT,
       `appID` char(32) NOT NULL DEFAULT 'content',
       `itemFK` char(32) NOT NULL DEFAULT 'itemRowID',
-      `itemRowID` int(10) unsigned NOT NULL,
-      `resourceID` int(10) unsigned NOT NULL,
+      `itemRowID` int(10) unsigned NOT NULL DEFAULT '0',
+      `resourceID` int(10) unsigned NOT NULL DEFAULT '0',
       PRIMARY KEY (`logID`),
       KEY `idx_resource` (`resourceID`),
       KEY `idx_fk` (`itemFK`,`itemRowID`),
-      KEY `idx_uni` (`appID`,`itemFK`,`itemRowID`,`resourceID`)
+      UNIQUE KEY `idx_uni` (`appID`,`itemFK`,`itemRowID`,`resourceID`)
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+
+    INSERT INTO `__PREFIX__user_privileges` (`privKey`, `privTitle`, `privOrder`)
+    VALUES ('assets.create','Upload assets',1);
+
+    INSERT INTO `__PREFIX__user_privileges` (`privKey`, `privTitle`, `privOrder`)
+    VALUES ('assets.manage','Manage assets',2);
+
+
+    CREATE TABLE IF NOT EXISTS `__PREFIX__categories` (
+      `catID` int(10) NOT NULL AUTO_INCREMENT,
+      `setID` int(10) unsigned NOT NULL,
+      `catParentID` int(10) unsigned NOT NULL DEFAULT '0',
+      `catTitle` char(64) NOT NULL DEFAULT '',
+      `catSlug` char(64) NOT NULL DEFAULT '',
+      `catPath` char(255) NOT NULL DEFAULT '',
+      `catDisplayPath` char(255) NOT NULL DEFAULT '',
+      `catOrder` int(10) unsigned NOT NULL DEFAULT '0',
+      `catTreePosition` char(255) NOT NULL DEFAULT '000',
+      `catDynamicFields` text NOT NULL,
+      PRIMARY KEY (`catID`),
+      KEY `idx_set` (`setID`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+    CREATE TABLE IF NOT EXISTS `__PREFIX__category_sets` (
+      `setID` int(10) NOT NULL AUTO_INCREMENT,
+      `setTitle` char(64) NOT NULL DEFAULT '',
+      `setSlug` char(64) NOT NULL DEFAULT '',
+      `setTemplate` char(255) NOT NULL DEFAULT 'set.html',
+      `setCatTemplate` char(255) NOT NULL DEFAULT 'category.html',
+      `setDynamicFields` text,
+      PRIMARY KEY (`setID`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+    INSERT INTO `__PREFIX__user_privileges` (`privKey`, `privTitle`, `privOrder`)
+    VALUES ('categories.create','Create new categories',1);
+
+    INSERT INTO `__PREFIX__user_privileges` (`privKey`, `privTitle`, `privOrder`)
+    VALUES ('categories.delete','Delete categories',2);
+    
+    INSERT INTO `__PREFIX__user_privileges` (`privKey`, `privTitle`, `privOrder`)
+    VALUES ('categories.manage','Manage categories',3);
+    
+    INSERT INTO `__PREFIX__user_privileges` (`privKey`, `privTitle`, `privOrder`)
+    VALUES ('categories.sets.create','Create category sets',4);
+    
+    INSERT INTO `__PREFIX__user_privileges` (`privKey`, `privTitle`, `privOrder`)
+    VALUES ('categories.sets.delete','Delete category sets',5);
+
     ";
-
-
-
 
 	$sql = str_replace('__PREFIX__', PERCH_DB_PREFIX, $sql);
 	$queries = explode(';', $sql);
@@ -108,10 +159,10 @@
         }
     }
 
-    include(PERCH_CORE.'/apps/assets/PerchAssets_Assets.class.php');
-    include(PERCH_CORE.'/apps/assets/PerchAssets_Asset.class.php');
-    $Assets = new PerchAssets_Assets();
+#  include(PERCH_CORE.'/apps/assets/PerchAssets_Assets.class.php');
+#   include(PERCH_CORE.'/apps/assets/PerchAssets_Asset.class.php');
+#   $Assets = new PerchAssets_Assets();
 
-    $Assets->import_from_perch_gallery();
+#   $Assets->import_from_perch_gallery();
 
-    $Assets->reindex();
+#    $Assets->reindex();

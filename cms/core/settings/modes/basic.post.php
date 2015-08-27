@@ -52,8 +52,8 @@
         </div>
         
         <div class="field">
-            <?php echo $Form->label('logo', 'Upload a logo'); ?>
-            <?php echo $Form->image('logo');
+            <?php echo $Form->label('customlogo', 'Upload a logo'); ?>
+            <?php echo $Form->image('customlogo');
 
                 $logo = $Settings->get('logoPath')->settingValue();
                 if ($logo) {
@@ -75,8 +75,8 @@
             <?php echo $Form->label('headerScheme', 'Header colour scheme'); ?>
             <?php 
 				$opts = array();
-				$opts[] = array('label'=>'Dark text for light background colours', 'value'=>'light');
-				$opts[] = array('label'=>'Light text for dark background colours', 'value'=>'dark');
+				$opts[] = array('label'=>PerchLang::get('Dark text for light background colours'), 'value'=>'light');
+				$opts[] = array('label'=>PerchLang::get('Light text for dark background colours'), 'value'=>'dark');
 
 				echo $Form->select('headerScheme', $opts, $Form->get(@$details, 'headerScheme', 'light')); 
 			?>

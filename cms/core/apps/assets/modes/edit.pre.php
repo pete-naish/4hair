@@ -21,6 +21,11 @@
         }
 
     }else{
+
+        if (!$CurrentUser->has_priv('assets.create')) {
+            PerchUtil::redirect(PERCH_LOGINPATH.'/core/apps/assets/');
+        }
+
         $assetID = false;
         $Asset = false;
     }
@@ -43,8 +48,12 @@
     
         $created = false;
 
-		$postvars = array('resourceTitle', 'resourceInLibrary');
+		$postvars = array('resourceTitle', 'resourceInLibrary', 'resourceBucket');
 		$data = $Form->receive($postvars);
+
+        if (isset($data['resourceBucket'])) {
+            $FieldTag->set('bucket', $data['resourceBucket']);
+        }
 
         if (!isset($data['resourceInLibrary'])) $data['resourceInLibrary'] = 0;
 
@@ -54,14 +63,18 @@
 
         if (PerchUtil::count($var)) {
             $Resources = new PerchResources;
-            $ids = $Resources->get_logged_ids();
-            $assetID = array_shift($ids);
-            $Asset = $Assets->find($assetID);
-            $created = true;
+            $ids       = $Resources->get_logged_ids();
+            $assetID   = array_shift($ids);
+            $Asset     = $Assets->find($assetID);
+            $created   = true;
         }
 
 
         if ($Asset) {
+
+            if ($data['resourceInLibrary']=='1') {
+                $Asset->mark_as_library();
+            }
 
             $Asset->update($data);
     		$Asset->reindex();
@@ -73,7 +86,7 @@
             }
             
             if ($created) {
-                PerchUtil::redirect(PERCH_LOGINPATH.'/core/apps/assets/edit/?id='.$Asset->id().'&created=1');
+                //PerchUtil::redirect(PERCH_LOGINPATH.'/core/apps/assets/edit/?id='.$Asset->id().'&created=1');
             }
 
     		$Alert->set('success', PerchLang::get('Successfully updated'));

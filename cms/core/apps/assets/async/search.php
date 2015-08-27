@@ -3,7 +3,7 @@
     include(realpath(__DIR__ . '/../../../..').'/config/config.php');
     include(PERCH_CORE . '/inc/loader.php');
     $Perch  = PerchAdmin::fetch();
-    include(PERCH_CORE . '/inc/auth.php');
+    include(PERCH_CORE . '/inc/auth_light.php');
     
     $Perch->page_title = PerchLang::get('Manage Assets');
 

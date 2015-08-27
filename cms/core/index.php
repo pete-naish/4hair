@@ -52,7 +52,11 @@
             if ($logo) {
                 echo '<img src="'.PerchUtil::html($logo).'" alt="" />';
             }else{
-                echo '<img src="'.PERCH_LOGINPATH.'/core/assets/img/logo.png" width="110" alt="Perch" />';
+                if (PERCH_RUNWAY) {
+                    echo '<img src="'.PERCH_LOGINPATH.'/core/runway/assets/img/logo.png" width="180" alt="Perch Runway" />';
+                }else{
+                    echo '<img src="'.PERCH_LOGINPATH.'/core/assets/img/logo.png" width="110" class="logo" alt="Perch" />';
+                }
             }
         ?>
     </div>
@@ -110,7 +114,7 @@
                 
                 <div<?php if ($login_attempt && $password=='') echo ' class="error"'; ?>>
                     <label for="password"><?php echo PerchLang::get('Password'); ?></label>
-                    <input type="password" name="password" value="" id="password" class="text" />
+                    <input type="password" name="password" value="" id="password" class="text" autocomplete="off" />
                     <?php if ($login_attempt && $password=='') echo '<span class="error">'.PerchLang::get('Required').'</span>'; ?>
                 </div>
 

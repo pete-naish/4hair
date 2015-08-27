@@ -1,8 +1,9 @@
 <?php
 
-	$Pages = new PerchContent_Pages;
-	$Regions = new PerchContent_Regions;
+    $Pages   = new PerchContent_Pages;
+    $Regions = new PerchContent_Regions;
     $Page  = false;
+    $collections = false;
     
     // Find the page
     if (isset($_GET['id']) && is_numeric($_GET['id'])) {
@@ -23,6 +24,15 @@
     }
     
 
+    if (PERCH_RUNWAY) {
+        $Collections = new PerchContent_Collections;
+
+        if ($Page->pageCollections()) {
+            $collections = $Collections->get_by_id_string($Page->pageCollections());
+        }
+
+    }
+
 	if ($Page->pagePath()=='*') {
         $regions = $Regions->get_shared();
     }else{
@@ -30,4 +40,3 @@
     }
 
 
-?>

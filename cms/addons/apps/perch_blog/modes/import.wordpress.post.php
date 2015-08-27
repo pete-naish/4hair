@@ -15,10 +15,11 @@
 	# Title panel
     echo $HTML->heading1('Importing Data');
     
+    flush();
 
     if ($file) {
 
-        $results = $BlogUtil->import_from_wp($file, $format);
+        $results = $BlogUtil->import_from_wp($file, $format, null, $sectionID);
 
         if (PerchUtil::count($results)) {
             echo '<ul class="importables">';
@@ -26,6 +27,7 @@
                 echo '<li class="icon '.$result['type'].'">';
                 echo implode(' &mdash; ', $result['messages']);
                 echo '</li>';
+                flush();
             }
             echo '</ul>';
         }

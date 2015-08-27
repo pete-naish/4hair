@@ -14,6 +14,10 @@ class PerchAPI
         
         if (!defined('PERCH_APPS_EDITOR_PLUGIN')) define('PERCH_APPS_EDITOR_PLUGIN', 'markitup');
         if (!defined('PERCH_APPS_EDITOR_MARKUP_LANGUAGE')) define('PERCH_APPS_EDITOR_MARKUP_LANGUAGE', 'textile');
+
+        if (strpos($app_id, '_')===false) {
+            $this->Lang = PerchLang::fetch();
+        }
     }
 
     public function get($class)
@@ -47,10 +51,22 @@ class PerchAPI
         return false;
     }
     
-    public function app_path()
+    public function app_path($app_id=false)
     {
-        return PERCH_LOGINPATH.'/addons/apps/'.$this->app_id;
+        if (!$app_id) $app_id = $this->app_id;
+        return PERCH_LOGINPATH.'/addons/apps/'.$app_id;
+    }
+
+    public function on($event, $callback)
+    {
+        $Perch = Perch::fetch();
+        $Perch->on($event, $callback);
+    }
+
+    public function event()
+    {
+        $Perch = Perch::fetch();
+        
+        call_user_func_array(array($Perch, 'event'), func_get_args());
     }
 }
-
-?>

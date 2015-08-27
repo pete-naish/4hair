@@ -1,23 +1,35 @@
 <?php
-    $auth_page = true;
-    $done = false;
+	$auth_page = true;
+	$done      = false;
+	
+	$errors    = false;
 
-    $errors = false;
+
 
     include('../inc/pre_config.php');
     include('../../config/config.php');
     include(PERCH_CORE . '/inc/loader.php');
 
-    $Perch  = new PerchAdmin;
+    $Perch  = PerchAdmin::fetch();
+
+    $setting_key = 'update_'.$Perch->version;
+  	if (PERCH_RUNWAY) $setting_key = 'update_runway_'.$Perch->version;
+
     include(PERCH_CORE . '/inc/auth.php');
 
     // Done allow this to be run twice.
-    if ($Settings->get('update_'.$Perch->version)->val()) {
-    	PerchUtil::redirect(PERCH_LOGINPATH);
+    if ($Settings->get($setting_key)->val()) {
+
+    	if (isset($_GET['force']) && $_GET['force']=='update') {
+    		// skip checks
+    	}else{
+    		PerchUtil::redirect(PERCH_LOGINPATH);	
+    	}
+   	
     }
 
     if (isset($_GET['force']) && $_GET['force']=='accept') {
-    	$Settings->set('update_'.$Perch->version, 'done');
+    	$Settings->set($setting_key, 'done');
     	PerchUtil::redirect(PERCH_LOGINPATH);
     }
 
@@ -38,7 +50,7 @@
     if ($CurrentUser->logged_in()) {
 ?>
 	<!--[if lt IE 9]><link rel="stylesheet" href="<?php echo PerchUtil::html(PERCH_LOGINPATH); ?>/core/assets/css/iebase.css?v=<?php echo PerchUtil::html($Perch->version); ?>" type="text/css" /><![endif]-->
-	<link rel="stylesheet" href="<?php echo PerchUtil::html(PERCH_LOGINPATH); ?>/core/assets/css/v2.css?v=<?php echo PerchUtil::html($Perch->version); ?>" type="text/css" />
+	<link rel="stylesheet" href="<?php echo PerchUtil::html(PERCH_LOGINPATH); ?>/core/assets/css/perch.css?v=<?php echo PerchUtil::html($Perch->version); ?>" type="text/css" />
 	<link rel="stylesheet" href="<?php echo PerchUtil::html(PERCH_LOGINPATH); ?>/core/assets/css/720.css?v=<?php echo PerchUtil::html($Perch->version); ?>" type="text/css" media="only screen and (min-width: 720px)" />
 	<!--[if lt IE 9]><link rel="stylesheet" href="<?php echo PerchUtil::html(PERCH_LOGINPATH); ?>/core/assets/css/720.css?v=<?php echo PerchUtil::html($Perch->version); ?>" type="text/css" /><![endif]-->
 	<!--[if IE 7]><link rel="stylesheet" href="<?php echo PerchUtil::html(PERCH_LOGINPATH); ?>/core/assets/css/ie7.css?v=<?php echo PerchUtil::html($Perch->version); ?>" type="text/css" /><![endif]-->
@@ -60,8 +72,6 @@
 
 					$DB = PerchDB::fetch();
 
-
-
 					if (PerchUtil::count($files)) {
 						foreach($files as $file) {
 							if (PerchUtil::file_extension($file) == 'php') {
@@ -72,7 +82,7 @@
 
 				   	if (!$errors) {
 				    	echo '<li class="icon success">Successfully updated to version '.$Perch->version.'.</li>';    
-				    	$Settings->set('update_'.$Perch->version, 'done');
+				    	$Settings->set($setting_key, 'done');
 				    }
 
 				?>
@@ -94,7 +104,6 @@
     	PerchUtil::debug('Queries: '. PerchDB_MySQL::$queries);
     	PerchUtil::output_debug(); 
     }
-
 ?>
 </body>
 </html>

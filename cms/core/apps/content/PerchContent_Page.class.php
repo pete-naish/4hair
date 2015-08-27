@@ -42,15 +42,14 @@ class PerchContent_Page extends PerchBase
         if ($order===false) {
             if (is_object($ParentPage)) {
                 $data['pageOrder'] = $ParentPage->find_next_child_order();
-            }else{
+            }else{ 
                 $data['pageOrder'] = $this->find_next_child_order(0);
             }
             
         }else{
             $data['pageOrder'] = $order;
         }
-        
-        
+              
         
         if (is_object($ParentPage)) {
             $data['pageDepth'] = ($ParentPage->pageDepth()+1);
@@ -89,7 +88,7 @@ class PerchContent_Page extends PerchBase
             $parentID = $this->id();
         }
         
-        $sql = 'SELECT MAX(pageOrder) FROM '.$this->table.' WHERE pageParentID='.$this->db->pdb($parentID);
+        $sql = 'SELECT MAX(pageOrder) FROM '.$this->table.' WHERE pageParentID='.$this->db->pdb((int)$parentID);
         $max = $this->db->get_count($sql);
         
         return $max+1;
@@ -137,7 +136,7 @@ class PerchContent_Page extends PerchBase
         $site_path = $Pages->find_site_path();
 
         $file = PerchUtil::file_path($site_path.'/'.$this->pagePath());
-        if (!$this->pageNavOnly() && file_exists($file)) {
+        if (!PERCH_RUNWAY && !$this->pageNavOnly() && file_exists($file)) {
             if (defined('PERCH_DONT_DELETE_FILES') && PERCH_DONT_DELETE_FILES==true) {
                 // don't delete files!
             }else{
@@ -154,7 +153,7 @@ class PerchContent_Page extends PerchBase
     public function get_navgroup_ids()
     {
         $sql = 'SELECT DISTINCT groupID FROM '.PERCH_DB_PREFIX.'navigation_pages
-                WHERE pageID='.$this->db->pdb($this->id());
+                WHERE pageID='.$this->db->pdb((int)$this->id());
         return $this->db->get_rows_flat($sql);
     }
 
@@ -169,7 +168,7 @@ class PerchContent_Page extends PerchBase
 
             // remove any not in this set
             $sql = 'DELETE FROM '.PERCH_DB_PREFIX.'navigation_pages
-                    WHERE pageID='.$this->db->pdb($this->id()).' AND groupID NOT IN ('.$this->db->implode_for_sql_in($groupIDs).')';
+                    WHERE pageID='.$this->db->pdb((int)$this->id()).' AND groupID NOT IN ('.$this->db->implode_for_sql_in($groupIDs, true).')';
             $this->db->execute($sql);
 
             $existing = $this->get_navgroup_ids();
@@ -228,6 +227,8 @@ class PerchContent_Page extends PerchBase
             $out = array_merge($dynamic_fields, $out);
         }
 
+        $out = array_merge($out, PerchSystem::get_attr_vars());
+
         return $out;
     }
 
@@ -239,6 +240,8 @@ class PerchContent_Page extends PerchBase
 
     public function template_attribute($id, $opts)
     {
+        $attr_vars = PerchSystem::get_attr_vars();
+        if (isset($attr_vars[$id])) return $attr_vars[$id];
 
         if ($id=='pageTitle' || $id=='pageNavText') {
             return $this->details[$id]; 
@@ -262,6 +265,7 @@ class PerchContent_Page extends PerchBase
     {
         $new_location = PerchUtil::file_path($new_location);
         $new_location = str_replace(PERCH_LOGINPATH, '/', $new_location);
+        $new_location = str_replace('\\', '/', $new_location);
         $new_location = str_replace('..', '', $new_location);
         $new_location = str_replace('//', '/', $new_location);
 
@@ -285,10 +289,15 @@ class PerchContent_Page extends PerchBase
                             if (preg_match($pattern, $contents, $match)) {
                                 
                                 $current_path = $match[1];
-                                $template_dir = PerchUtil::file_path(PERCH_TEMPLATE_PATH.'/pages');
-                                $template_path = str_replace(PERCH_SITEPATH.'/', '', PERCH_TEMPLATE_PATH).'/pages/';
+                                $template_dir = PERCH_TEMPLATE_PATH.'/pages';
+                                $template_path = str_replace(PERCH_SITEPATH.DIRECTORY_SEPARATOR, '', PERCH_TEMPLATE_PATH).'/pages/';
 
-                                $parts = explode($template_path, PerchUtil::file_path($current_path));
+                                // normalise
+                                $current_path = str_replace(DIRECTORY_SEPARATOR, '/', $current_path);
+                                $template_dir = str_replace(DIRECTORY_SEPARATOR, '/', $template_dir);
+                                $template_path = str_replace(DIRECTORY_SEPARATOR, '/', $template_path);
+
+                                $parts = explode($template_path, $current_path);
                                 if (PerchUtil::count($parts)) {
                                     $master_page_template = $parts[1];
 
@@ -298,6 +307,18 @@ class PerchContent_Page extends PerchBase
                                     $new_include_path = $Pages->get_relative_path($a, $b);
 
                                     $new_include = '<'.'?php include(str_replace(\'/\', DIRECTORY_SEPARATOR, \''.$new_include_path.'\')); ?'.'>';
+                                    /*
+                                    $new_include .= '<' . '?php /* '.PHP_EOL;
+                                    $new_include .= 'Current path: '.$current_path.PHP_EOL;
+                                    $new_include .= 'Template dir: '.$template_dir.PHP_EOL;
+                                    $new_include .= 'Template path: '.$template_path.PHP_EOL;
+                                    $new_include .= 'Master page template: '.$master_page_template.PHP_EOL;
+                                    $new_include .= 'A: '.$a.PHP_EOL;
+                                    $new_include .= 'B: '.$b.PHP_EOL;
+                                    $new_include .= 'New include path: '.$new_include_path.PHP_EOL;
+                                    $new_include .= 'Parts: '.print_r($parts, true).PHP_EOL;
+                                    $new_include .= PHP_EOL.' *'.'/ ?' . '>';
+                                    */
 
                                     file_put_contents($new_path, str_replace($match[0], $new_include, $contents));
 
@@ -350,6 +371,35 @@ class PerchContent_Page extends PerchBase
             return array(true, false);
         }
     }
-}
 
-?>
+    public function log_resources($resourceIDs=false)
+    {
+        PerchUtil::debug('Logging resources for '.$this->api->app_id);
+        
+        if ($resourceIDs===false) {
+            $Resources = new PerchResources();
+            $resourceIDs = $Resources->get_logged_ids();    
+        } 
+
+        if (PerchUtil::count($resourceIDs) && $this->api) {
+
+            $app_id = $this->api->app_id;
+            
+            $sql = 'DELETE FROM '.PERCH_DB_PREFIX.'resource_log WHERE appID='.$this->db->pdb($app_id).' AND itemFK='.$this->db->pdb($this->pk).' AND itemRowID='.$this->db->pdb((int)$this->id());
+            $this->db->execute($sql);
+            
+            $sql    = 'INSERT IGNORE INTO '.PERCH_DB_PREFIX.'resource_log(`appID`, `itemFK`, `itemRowID`, `resourceID`) VALUES';      
+            $vals   = array();
+            
+            foreach($resourceIDs as $id) {
+                $vals[] = '('.$this->db->pdb($app_id).','.$this->db->pdb($this->pk).','.(int)$this->id().','.(int)$id.')';
+            }
+
+            $sql .= implode(',', $vals);
+
+            $this->db->execute($sql);
+        }else{
+            PerchUtil::debug('No ids to log.');
+        }
+    }   
+}

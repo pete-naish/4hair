@@ -70,16 +70,25 @@ function program1(depth0,data) {
 templates['asset-chooser'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
+function program1(depth0,data) {
+  
+  var buffer = "", helper, options;
+  buffer += "<a href=\"#\" class=\"add button\">"
+    + escapeExpression((helper = helpers.Lang || (depth0 && depth0.Lang),options={hash:{},data:data},helper ? helper.call(depth0, "Add Asset", options) : helperMissing.call(depth0, "Lang", "Add Asset", options)))
+    + "</a>";
+  return buffer;
+  }
 
   buffer += "<div class=\"asset-chooser\">\n	<div class=\"asset-topbar\">\n		<div class=\"actions\">\n			<a href=\"#\" class=\"close icon asset-icon\"><span class=\"hidden\">"
     + escapeExpression((helper = helpers.Lang || (depth0 && depth0.Lang),options={hash:{},data:data},helper ? helper.call(depth0, "Close", options) : helperMissing.call(depth0, "Lang", "Close", options)))
-    + "</span></a>\n			<a href=\"#\" class=\"add button\">"
-    + escapeExpression((helper = helpers.Lang || (depth0 && depth0.Lang),options={hash:{},data:data},helper ? helper.call(depth0, "Add Asset", options) : helperMissing.call(depth0, "Lang", "Add Asset", options)))
-    + "</a>\n			<a href=\"#\" class=\"select button\">"
+    + "</span></a>\n			";
+  stack1 = (helper = helpers.hasPriv || (depth0 && depth0.hasPriv),options={hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data},helper ? helper.call(depth0, "assets.create", options) : helperMissing.call(depth0, "hasPriv", "assets.create", options));
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			<a href=\"#\" class=\"select button\">"
     + escapeExpression((helper = helpers.Lang || (depth0 && depth0.Lang),options={hash:{},data:data},helper ? helper.call(depth0, "Use Selected", options) : helperMissing.call(depth0, "Lang", "Use Selected", options)))
-    + "</a>\n\n		</div>\n		<h2>"
+    + "</a>\n		</div>\n		<h2>"
     + escapeExpression((helper = helpers.Lang || (depth0 && depth0.Lang),options={hash:{},data:data},helper ? helper.call(depth0, "Select an Asset", options) : helperMissing.call(depth0, "Lang", "Select an Asset", options)))
     + "</h2>\n	</div>\n	<div class=\"asset-drop\">\n		<form action=\"";
   if (helper = helpers.upload_url) { stack1 = helper.call(depth0, {hash:{},data:data}); }
@@ -109,17 +118,21 @@ function program1(depth0,data) {
   if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "\">\n		<div class=\"asset-meta";
+    + "\">\n		";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.has_thumb), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		<div class=\"asset-meta";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.has_thumb), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\"><span class=\"title\">";
   if (helper = helpers.title) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.title); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "</span></div>\n		";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.has_thumb), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	</div>\n";
+    + "</span></div>\n		<span class=\"ind ";
+  if (helper = helpers.orientation) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.orientation); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\"></span>\n	</div>\n";
   return buffer;
   }
 function program2(depth0,data) {
@@ -130,14 +143,12 @@ function program2(depth0,data) {
 
 function program4(depth0,data) {
   
-  
-  return " with-thumb";
-  }
-
-function program6(depth0,data) {
-  
   var buffer = "", stack1, helper;
-  buffer += "\n			<img class=\"thumb\" src=\"";
+  buffer += "\n			<img class=\"thumb ";
+  if (helper = helpers.orientation) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.orientation); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\" src=\"";
   if (helper = helpers.thumburl) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.thumburl); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
@@ -145,16 +156,22 @@ function program6(depth0,data) {
   if (helper = helpers.title) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.title); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "\" width=\"";
+    + "\" data-width=\"";
   if (helper = helpers.thumbwidth) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.thumbwidth); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "\" height=\"";
+    + "\" data-height=\"";
   if (helper = helpers.thumbheight) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.thumbheight); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
     + "\" />\n		";
   return buffer;
+  }
+
+function program6(depth0,data) {
+  
+  
+  return " with-thumb";
   }
 
 function program8(depth0,data) {
@@ -236,6 +253,22 @@ function program4(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.assets), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</tbody>\n</table>";
+  return buffer;
+  });
+
+templates['asset-static-drop'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, helper, options, functionType="function", escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing;
+
+
+  buffer += "<div class=\"asset-drop static\">\n	<form action=\"";
+  if (helper = helpers.upload_url) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.upload_url); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
+  buffer += escapeExpression(stack1)
+    + "\" id=\"asset-dropzone\" method=\"post\" enctype=\"multipart/form-data\">\n		<div class=\"fallback\">\n		    <input name=\"file\" type=\"file\" multiple />\n		    <input type=\"submit\" value=\""
+    + escapeExpression((helper = helpers.Lang || (depth0 && depth0.Lang),options={hash:{},data:data},helper ? helper.call(depth0, "Upload", options) : helperMissing.call(depth0, "Lang", "Upload", options)))
+    + "\" />\n		 </div>\n	</form>\n</div>\n";
   return buffer;
   });
 }());

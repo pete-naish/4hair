@@ -54,7 +54,7 @@
                     }else{
                         echo PERCH_LOGINPATH . '/core/apps/content/page/?id='.PerchUtil::html($Region->pageID());
                     }
-                ?>">Regions</a> 
+                ?>"><?php echo PerchLang::get('Regions'); ?></a> 
 			<span class="sep icon"></span> 
 			<a href="<?php echo PERCH_LOGINPATH . '/core/apps/content/edit/?id='.PerchUtil::html($Region->id());?>"><?php echo PerchUtil::html($Region->regionKey()); ?></a>
 			</span>
@@ -63,9 +63,15 @@
 			if ($CurrentUser->has_priv('content.regions.options')) {
 	            echo '<li><a href="'.PERCH_LOGINPATH . '/core/apps/content/options/?id='.PerchUtil::html($Region->id()).'">' . PerchLang::get('Region Options') . '</a></li>';
 	        }
+
 		?>
 		<li class="fin"><a class="icon reorder" href="<?php echo PERCH_LOGINPATH . '/core/apps/content/reorder/region/?id='.PerchUtil::html($Region->id());?>"><?php echo PerchLang::get('Reorder'); ?></a></li>
         <?php
+
+            if (PERCH_RUNWAY) {
+                echo '<li class="fin"><a class="icon undo" href="'.PERCH_LOGINPATH . '/core/apps/content/revisions/?id='.PerchUtil::html($Region->id()).'">' . PerchLang::get('Revision History') . '</a></li>';
+            }
+
             if ($Page->pagePath() != '*') {
                 $view_page_url = rtrim($Settings->get('siteURL')->val(), '/').$Page->pagePath();
 
@@ -133,7 +139,7 @@
                                 
                             }
 
-                            if ($col['Tag'] && $col['Tag']->type()) {
+                            if ($col['Tag']) {
 
                                 $FieldType = PerchFieldTypes::get($col['Tag']->type(), false, $col['Tag']);
 
@@ -172,4 +178,4 @@
 
 
 
-<?php include (PERCH_PATH.'/core/inc/main_end.php'); ?>
+<?php include (PERCH_PATH.'/core/inc/main_end.php'); 

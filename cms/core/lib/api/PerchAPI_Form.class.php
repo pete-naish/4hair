@@ -12,12 +12,19 @@ class PerchAPI_Form extends PerchForm
     public $last = false;
 
     private $hint = false;
+
+    public $orig_post = array();
+
+    public $add_another = false;
+    private $submitted_with_add_another = false;
     
     function __construct($version=1.0, $app_id, $Lang)
     {
         $this->app_id = $app_id;
         $this->version = $version;
         $this->Lang = $Lang;
+
+        $this->orig_post = $_POST;
         
         // Include editor plugin
         $dir = PERCH_PATH.DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.'editors'.DIRECTORY_SEPARATOR.PERCH_APPS_EDITOR_PLUGIN;
@@ -41,9 +48,31 @@ class PerchAPI_Form extends PerchForm
         return $r;
     }
     
-    public function form_end()
+    public function form_end($submit_button=false)
     {
-        return '</form>';
+        $s = '';
+
+        if ($submit_button) {
+            $s .= $this->submit_field();
+        }
+
+        $s .= '</form>';
+
+        return $s;
+    }
+
+    public function form_complete($Template, $Item)
+    {
+        $s = '';
+
+        $details = array();
+        if (is_object($Item)) $details = $Item->to_array();
+
+        echo $this->form_start();
+        echo $this->fields_from_template($Template, $details);
+        echo $this->form_end(true);
+
+        return $s;
     }
     
     public function receive($postvars)
@@ -52,7 +81,7 @@ class PerchAPI_Form extends PerchForm
 	    foreach($postvars as $val){
 	        if (isset($_POST[$val])) {
 	            if (!is_array($_POST[$val])){
-	                $data[$val]	= trim(stripslashes($_POST[$val]));
+	                $data[$val]	= trim(PerchUtil::safe_stripslashes($_POST[$val]));
 	            }else{
 	                $data[$val]	= $_POST[$val];
 	            }
@@ -69,9 +98,18 @@ class PerchAPI_Form extends PerchForm
     
     public function submitted()
     {
+        if (isset($_POST['add_another']) && $_POST['add_another']!='') {
+            $this->submitted_with_add_another = true;
+        }
+
         return $this->posted() && $this->validate();
     }
     
+    public function submitted_with_add_another()
+    {
+        return $this->submitted_with_add_another;
+    }
+
     public function text_field($id, $label, $value='', $class='', $limit=false, $attributes='')
     {
         $out = $this->field_start($id);
@@ -172,6 +210,16 @@ class PerchAPI_Form extends PerchForm
         return $out;
     }
     
+    public function grouped_select_field($id, $label, $options, $value='', $class='')
+    {
+        $out = $this->field_start($id);
+        $out .= $this->label($id, $this->Lang->get($label), '', $colon=false, $translate=false);
+        $out .= $this->grouped_select($id, $options, $this->get_value($id, $value), $class);
+        $out .= $this->field_end($id);
+        
+        return $out;
+    }
+
     
     public function checkbox_field($id, $label, $checked_value='1', $value='', $class='', $limit=false)
     {
@@ -186,9 +234,13 @@ class PerchAPI_Form extends PerchForm
     
     public function checkbox_set($id, $label, $options, $values=array(), $class='', $limit=false, $container_class='')
     {
-        $out = $this->field_start($id);
+        $out = '';
+        if ($label!==false) $out = $this->field_start($id);
         
-        $out .= '<fieldset class="checkboxes '.$container_class.'"><strong>'.PerchUtil::html($this->Lang->get($label)).'</strong>';
+        if (!$values) $values = array();
+
+        $out .= '<fieldset>';
+        $out .= '<div class="wrapped checkboxes '.$container_class.'"><strong>'.PerchUtil::html($this->Lang->get($label)).'</strong>';
         $i = 0;
         
         foreach($options as $option) {
@@ -214,22 +266,29 @@ class PerchAPI_Form extends PerchForm
         }
         
         
+        $out .= '</div>';
         $out .= '</fieldset>';
-        $out .= $this->field_end($id);
+        if ($label!==false) $out .= $this->field_end($id);
         
         return $out;
     }
     
     
-    public function submit_field($id='btnSubmit', $value="Save", $cancel_url=false, $class='button')
+    public function submit_field($id='btnSubmit', $value="Save Changes", $cancel_url=false, $class='button')
     {
         $out = $this->submit_start();
 				
 		$out .= $this->submit($id, $this->Lang->get($value), $class, $translate=false);
 		
+        if ($this->add_another) {
+            $out .= $this->submit('add_another', $this->Lang->get('Save & Add another'), 'button', $translate=false);
+        }
+
 		if ($cancel_url) {
 		    $out .= ' ' . $this->Lang->get('or') . ' <a href="'.$this->encode($cancel_url).'">' . $this->Lang->get('Cancel'). '</a>'; 
 		}		
+
+
 		        
         $out .= $this->submit_end();
         
@@ -265,7 +324,8 @@ class PerchAPI_Form extends PerchForm
         
         $this->hint = $string;
     }
-    
+
+   
     public function field_help($string)
     {
         $args = func_get_args();
@@ -309,7 +369,163 @@ class PerchAPI_Form extends PerchForm
         return $this->get($array, $id, $value);
     }
     
-    public function set_required_fields_from_template($Template, $seen_tags=array())
+    public function set_required_fields_from_template($Template, $details=array(), $seen_tags=array())
+    {   
+        $tags       = $Template->find_all_tags_and_repeaters();
+
+        if (is_array($tags)) {           
+            PerchContent_Util::set_required_fields($this, null, $details, $tags, $Template);
+        }
+        
+        // init editors 
+        $tags       = $Template->find_all_tags();
+        if (PerchUtil::count($tags)) {
+            foreach($tags as $Tag) {
+                if ($Tag->type()) PerchFieldTypes::get($Tag->type(), $this, $Tag, $tags, $this->app_id);
+            }
+        }
+
+        
+    }
+ 
+    public function fields_from_template($Template, $details=array(), $seen_tags=array(), $include_repeaters=true)
+    {    
+        if ($include_repeaters) {
+            $tags   = $Template->find_all_tags_and_repeaters();    
+        }else{
+            $tags   = $Template->find_all_tags();
+        }
+                
+        $Form = $this;
+        
+        $out = '';        
+        
+        if (PerchUtil::count($tags)) {
+            PerchContent_Util::display_item_fields($tags, null, $details, false, $Form, $Template, array('PerchAPI_Form', 'get_block_link'), $seen_tags);
+        }
+        
+        return $out;
+    }
+
+    public static function get_block_link($qs)
+    {
+        return '?'.http_build_query($qs);
+    }
+    
+    public function receive_from_template_fields($Template, $previous_values, $Factory=false, $Item=false, $clear_post=true, $strip_static=true)
+    {
+        $tags   = $Template->find_all_tags_and_repeaters();    
+
+        if (is_object($Item)) {
+            $Item->squirrel('itemID', '');
+            $Item->squirrel('itemRowID', '');    
+        }else{
+            $Item = $Factory->return_instance(array(
+                    'itemID' => '',
+                    'itemRowID' => '',
+                ));
+            $Item->set_null_id();
+        }
+
+        $Item->squirrel('itemJSON', PerchUtil::json_safe_encode($previous_values));
+        
+        $subprefix   = '';
+        $postitems   = $this->find_items('perch_');
+        $form_vars   = array();
+        $options     = array();
+        $search_text = ' ';
+
+        $API = new PerchAPI(1.0, $this->app_id);
+        $Resources = $API->get('Resources');
+
+        list($form_vars, $search_text) = PerchContent_Util::read_items_from_post($Item, $tags, $subprefix, $form_vars, $postitems, $this, $search_text, $options, $Resources, false, $Template);
+
+        if (isset($form_vars['_blocks'])) {
+            $form_vars['_blocks'] = PerchUtil::array_sort($form_vars['_blocks'], '_block_index');
+        }
+
+        $out = array();
+        if ($strip_static) {
+            if (PerchUtil::count($form_vars)) {
+                foreach($form_vars as $key=>$val) {
+                    if (!in_array($key, $Factory->static_fields)) {
+                        $out[$key]=$val;
+                    }
+                }
+            }    
+        }else{
+            $out = $form_vars;
+        }
+        
+        
+        // Clear values from Post (for reordering of blocks etc)
+        if ($clear_post) $_POST = array();
+
+        return $out;
+    }
+
+    public function get_posted_content($Template, $Factory, $Item=false, $include_repeaters=true, $json_encode=true)
+    {
+        $data = array();
+
+        $prev = false;
+        if ($Item) $prev = $Item->to_array();
+        
+        $dynamic_fields = $this->receive_from_template_fields($Template, $prev, $Factory, $Item, true, false);
+
+        $static_fields = array();
+
+        // fetch out static fields
+        foreach($Factory->static_fields as $field) {
+            if (array_key_exists($field, $dynamic_fields)) { //($dynamic_fields[$field])) {
+                if (is_array($dynamic_fields[$field])) {
+                    if (isset($dynamic_fields[$field]['_default'])) {
+                        $data[$field] = trim($dynamic_fields[$field]['_default']);
+                    }
+
+                    if (isset($dynamic_fields[$field]['processed'])) {
+                        $data[$field] = trim($dynamic_fields[$field]['processed']);
+                    }
+                }
+
+                if (!isset($data[$field])) $data[$field] = $dynamic_fields[$field];
+                unset($dynamic_fields[$field]);
+            }else{
+                if (isset($_POST[$field])) {
+                    if (!is_array($_POST[$field])){
+                        $data[$field] = trim(PerchUtil::safe_stripslashes($_POST[$field]));
+                    }else{
+                        $data[$field] = $_POST[$field];
+                    }
+                }
+            }
+        }
+
+        if (!$json_encode) return $dynamic_fields;
+        
+        $data[$Factory->dynamic_fields_column] = PerchUtil::json_safe_encode($dynamic_fields);
+
+        return $data;
+    }
+    
+    public function post_process_field($tag, $value)
+    {
+        $out = array();
+
+        $out[$tag->id()] = $value;
+        
+        return $out;
+    }
+
+    public function handle_empty_block_generation($Template)
+    {
+        if (PerchUtil::post('add-block')) {
+            echo PerchContent_Util::get_empty_block(null, PerchUtil::post('add-block'), (int)PerchUtil::post('count'), false, $Template, $this);
+            exit;
+        }
+    }
+
+    public function old_set_required_fields_from_template($Template, $seen_tags=array())
     {   
         $tags       = $Template->find_all_tags();
         
@@ -337,10 +553,15 @@ class PerchAPI_Form extends PerchForm
             }
         }
     }
-    
-    public function fields_from_template($Template, $details=array(), $seen_tags=array())
+
+    public function old_fields_from_template($Template, $details=array(), $seen_tags=array(), $include_repeaters=true)
     {    
-        $tags   = $Template->find_all_tags();
+        if ($include_repeaters) {
+            $tags   = $Template->find_all_tags_and_repeaters();    
+        }else{
+            $tags   = $Template->find_all_tags();
+        }
+        
         
         $Form = $this;
         
@@ -355,7 +576,11 @@ class PerchAPI_Form extends PerchForm
                 $tag->set('input_id', $item_id);
                 $tag->set('post_prefix', 'perch_');
             
-                if (!in_array($tag->id(), $seen_tags) && $tag->type()!='hidden' && $tag->type()!='slug') {
+                if (!in_array($tag->id(), $seen_tags) && $tag->type()!='hidden') {
+
+                    if ($tag->type()=='slug' && !$tag->editable()) {
+                        continue;
+                    }
 
                     if ($tag->divider_before()) {
                        $out .= '<h2 class="divider">'.PerchUtil::html($tag->divider_before()).'</h2>';
@@ -400,16 +625,18 @@ class PerchAPI_Form extends PerchForm
         
         return $out;
     }
-    
-    public function receive_from_template_fields($Template, $previous_values, $perch_only=true, $fixed_fields=false)
+
+    public function old_receive_from_template_fields($Template, $previous_values, $perch_only=true, $fixed_fields=false, $include_repeaters=true)
     {
-        $tags   = $Template->find_all_tags();
+        if ($include_repeaters) {
+            $tags   = $Template->find_all_tags_and_repeaters();    
+        }else{
+            $tags   = $Template->find_all_tags();
+        }
         
         $Form = $this;
         
         $form_vars = array();
-        
-        $image_folder_writable = is_writable(PERCH_RESFILEPATH);
         
         if (is_array($tags)) {
                                         
@@ -444,7 +671,7 @@ class PerchAPI_Form extends PerchForm
                     
                     $var = $FieldType->get_raw($postitems, $previous_values);
             
-                    if ($var) {
+                    if (true || $var) {
                        
                         $form_vars[$tag->id()] = $var;
                         
@@ -478,15 +705,6 @@ class PerchAPI_Form extends PerchForm
         
         return $form_vars;
     }
-    
-    public function post_process_field($tag, $value)
-    {
-        $out = array();
 
-        $out[$tag->id()] = $value;
-        
-        return $out;
-    }
 
 }
-?>

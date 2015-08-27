@@ -75,6 +75,8 @@ class PerchFieldType
         $this->app_id = $app_id;
         
         $this->required_id = $Tag->input_id();
+
+        $this->add_class_dependancies();
     
     }
     
@@ -83,6 +85,11 @@ class PerchFieldType
         
     }
     
+    public function add_class_dependancies()
+    {
+
+    }
+
     /**
      * Set the unique ID used by this field for rendering
      *
@@ -136,7 +143,7 @@ class PerchFieldType
         
         $id = $this->Tag->id();
         if (isset($post[$id])) {
-            $this->raw_item = trim(stripslashes($post[$id]));
+            $this->raw_item = trim(PerchUtil::safe_stripslashes($post[$id]));
             return $this->raw_item;
         }
         
@@ -242,5 +249,3 @@ class PerchFieldType
     }
     
 }
-
-?>

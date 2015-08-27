@@ -1,6 +1,12 @@
 <?php
 
 /**
+ *          DM - Not stock, note hacked encodeHTML() method.
+ * 
+ */
+
+
+/**
  * Textile - A Humane Web Text Generator.
  *
  * @link https://github.com/textile/php-textile
@@ -1227,6 +1233,7 @@ class Parser
         $text = $this->retrieveURLs($text);
 
         $text = str_replace("<br />", "<br />\n", $text);
+        //$text = str_replace("&amp;amp;", "&amp;", $text);
 
         return $text;
     }
@@ -3971,8 +3978,20 @@ class Parser
      * @see    htmlspecialchars()
      */
 
-    protected function encodeHTML($str, $quotes = true)
+    protected function encodeHTML($str, $quotes = true, $charset = 'UTF-8', $double_encode = false)
     {
+
+        // DM - 2014-07-10
+        if ($quotes) {
+            $q = ENT_QUOTES;
+        }else{
+            $q = ENT_NOQUOTES;
+        }
+        
+        return htmlspecialchars($str, $q, $charset, $double_encode);
+
+        // original:
+        
         $a = array(
             '&' => '&amp;',
             '<' => '&lt;',
@@ -4183,4 +4202,3 @@ class Tag extends DataBag
         return $attributes;
     }
 }
-

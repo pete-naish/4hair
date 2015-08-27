@@ -3,7 +3,7 @@
     include(realpath(__DIR__ . '/../../../..').'/config/config.php');
     include(PERCH_CORE . '/inc/loader.php');
     $Perch  = PerchAdmin::fetch();
-    include(PERCH_CORE . '/inc/auth.php');
+    include(PERCH_CORE . '/inc/auth_light.php');
 
     include(__DIR__.'/../PerchAssets_Tags.class.php');
     include(__DIR__.'/../PerchAssets_Tag.class.php');

@@ -19,6 +19,19 @@ class PerchContent_Region extends PerchBase
         return parent::__construct($details);
     }
 
+    public function delete()
+    {
+        $Items = new PerchContent_Items;
+        $Items->delete_for_region($this->id());
+
+        $r = parent::delete();
+
+        $Perch = Perch::fetch();
+        $Perch->event('region.delete', $this);
+
+        return $r;
+    }
+
 
     /**
      * Get a flat array of items
@@ -57,6 +70,17 @@ class PerchContent_Region extends PerchBase
         $Items = new PerchContent_Items;
         return $Items->get_for_region($this->id(), $this->regionLatestRev(), $item_id);
     }
+
+    /**
+     * Get a list of revisions for the item, for showing the Revision History
+     * @return [type]           [description]
+     */
+    public function get_revisions()
+    {
+        $Items = new PerchContent_Items;
+        return $Items->get_revisions_for_region($this->id());
+    }
+
 
 	/**
 	 * Get a count of the number of items for this rev of the region
@@ -242,6 +266,9 @@ class PerchContent_Region extends PerchBase
         $Items = new PerchContent_Items();
         $Item = $Items->create($new_item);
         
+        $Perch = Perch::fetch();
+        $Perch->event('region.add_item', $this);
+
         return $Item;
     }
     
@@ -268,7 +295,7 @@ class PerchContent_Region extends PerchBase
         if (!$is_draft) {
             $this->publish($new_rev);
         }
-        
+
         return true;
         
     }
@@ -286,6 +313,9 @@ class PerchContent_Region extends PerchBase
         $new_rev = $this->create_new_revision();
         $Items = new PerchContent_Items();
         $Items->truncate_for_region($this->id(), $new_rev, $resulting_item_count);
+
+        $Perch = Perch::fetch();
+        $Perch->event('region.truncate', $this);
     }
     
     /**
@@ -302,6 +332,9 @@ class PerchContent_Region extends PerchBase
     	
     	$Regions = new PerchContent_Regions;
     	$Regions->delete_with_key($this->regionKey(), true);
+
+        $Perch = Perch::fetch();
+        $Perch->event('region.share', $this);
     }
     
     /**
@@ -320,6 +353,9 @@ class PerchContent_Region extends PerchBase
             $data['regionPage'] = $Page->pagePath();
             $this->update($data);
             
+            $Perch = Perch::fetch();
+            $Perch->event('region.unshare', $this);
+
             return true;
         }
         
@@ -353,6 +389,9 @@ class PerchContent_Region extends PerchBase
         $this->update($data);
 
         $Items->delete_old_revisions($this->id(), $this->history_items);
+
+        $Perch = Perch::fetch();
+        $Perch->event('region.create_revision', $this);
         
         return $new_rev;
     }
@@ -389,7 +428,7 @@ class PerchContent_Region extends PerchBase
      * @return void
      * @author Drew McLellan
      */
-    public function publish($rev=false)
+    public function publish($rev=false, $change_latest=true)
     {
         if ($rev===false) $rev = $this->regionLatestRev();
         
@@ -398,9 +437,15 @@ class PerchContent_Region extends PerchBase
         $data = array();
         $data['regionHTML']      = $html;
         $data['regionRev']       = $rev;
-        $data['regionLatestRev'] = $rev;
+        
+        if ($change_latest) {
+            $data['regionLatestRev'] = $rev;
+        }
         
         $this->update($data);
+
+        $Perch = Perch::fetch();
+        $Perch->event('region.publish', $this);
     }
     
     /**
@@ -441,19 +486,19 @@ class PerchContent_Region extends PerchBase
     {
         if ($rev===false) $rev = $this->regionLatestRev();
 
+        $Items = new PerchContent_Items();
+
         // clear out old items
         $sql = 'DELETE FROM '.PERCH_DB_PREFIX.'content_index 
-                WHERE regionID='.$this->db->pdb($this->id()).' AND itemRev<'.$this->db->pdb($this->regionRev());
+                WHERE regionID='.$this->db->pdb((int)$this->id()).' AND itemRev<'.$this->db->pdb((int)$Items->get_oldest_rev($this->id()));
         $this->db->execute($sql);
 
-
-        $Items = new PerchContent_Items();
         $items  = $Items->get_for_region($this->id(), $rev);
 
         if (PerchUtil::count($items)) {
 
             $sql = 'DELETE FROM '.PERCH_DB_PREFIX.'content_index 
-                    WHERE regionID='.$this->db->pdb($this->id()).' AND itemRev='.$this->db->pdb($rev);
+                    WHERE regionID='.$this->db->pdb((int)$this->id()).' AND itemRev='.$this->db->pdb((int)$rev);
             $this->db->execute($sql);
         
 
@@ -471,6 +516,7 @@ class PerchContent_Region extends PerchBase
 
 
             foreach($items as $Item) {
+
                 $fields = PerchUtil::json_safe_decode($Item->itemJSON(), true);
                 
                 $sql = 'INSERT INTO '.PERCH_DB_PREFIX.'content_index (itemID, regionID, pageID, itemRev, indexKey, indexValue) VALUES ';
@@ -479,9 +525,13 @@ class PerchContent_Region extends PerchBase
                 $id_set = false;
 
                 if (PerchUtil::count($fields)) {
-                    foreach($fields as $key=>$value) {
+                    foreach($fields as $key=>$value) { 
                         if (isset($tag_index[$key])) {
                             $tag = $tag_index[$key];
+
+                            if ($tag->no_index()) {
+                                continue;
+                            }
 
                             if ($tag->type()=='PerchRepeater') {
                                 $index_value = $tag->get_index($value);
@@ -544,12 +594,13 @@ class PerchContent_Region extends PerchBase
 
         }
 
-
-
         // optimize index 
         $sql = 'OPTIMIZE TABLE '.PERCH_DB_PREFIX.'content_index';
         $this->db->get_row($sql);
         
+
+        $Perch = Perch::fetch();
+        $Perch->event('region.index', $this);
     }
 
     /**
@@ -569,11 +620,40 @@ class PerchContent_Region extends PerchBase
             $this->publish($prev_rev);
         
             $Items->delete_revision($this->id(), $undo_rev);
+
+            $Perch = Perch::fetch();
+            $Perch->event('region.undo', $this);
             
             return true;
         }
         
         return false;
+    }
+
+    /**
+     * Roll back to a specific revision (Runway)
+     * @param  [type] $rev [description]
+     * @return [type]      [description]
+     */
+    public function roll_back($rev)
+    {
+        if (!PERCH_RUNWAY) return false;
+
+        if ($this->regionRev()<$this->regionLatestRev()) {
+            $this->publish($rev, false);    
+        }else{
+            
+            $this->publish($rev, true);
+
+            $Items = new PerchContent_Items();
+            $Items->delete_revisions_newer_than($this->id(), $rev);
+        }
+
+        
+        $Perch = Perch::fetch();
+        $Perch->event('region.rollback', $this);
+
+        return true;
     }
     
     public function get_lowest_item_order()
@@ -598,9 +678,14 @@ class PerchContent_Region extends PerchBase
 
         if (PerchUtil::count($resources)) {
             foreach($resources as $Resource) {
-                $Resource->delete();
+                if ($Resource->is_not_in_use()) {
+                    $Resource->delete();    
+                }
             }
         }
+
+        $Perch = Perch::fetch();
+        $Perch->event('region.cleanup', $this);
     }
 
     public function get_edit_columns()
@@ -649,9 +734,7 @@ class PerchContent_Region extends PerchBase
                                 'Tag'=>false,
                             );
                 }
-
             }
-
             return $out;
         }
 
@@ -684,5 +767,3 @@ class PerchContent_Region extends PerchBase
     }
 
 }
-
-?>

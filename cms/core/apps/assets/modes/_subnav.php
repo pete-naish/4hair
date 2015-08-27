@@ -3,6 +3,7 @@
 		array('page'=>array(
 						'core/apps/assets',
 						'core/apps/assets/edit',
+						'core/apps/assets/delete',
 						), 
 				'label'=>'Add/Edit'),
 		array('page'=>array(

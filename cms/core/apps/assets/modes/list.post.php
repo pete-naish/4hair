@@ -4,10 +4,15 @@
 <?php include (PERCH_PATH.'/core/inc/main_start.php'); ?>
 <?php include ('_subnav.php'); ?>
 
-    <a class="add button" href="<?php echo PerchUtil::html(PERCH_LOGINPATH.'/core/apps/assets/edit/'); ?>"><?php echo PerchLang::get('Add asset'); ?></a>
+    <?php if ($CurrentUser->has_priv('assets.create')) { ?>
+    <a class="add button" id="staticdrop" href="<?php echo PerchUtil::html(PERCH_LOGINPATH.'/core/apps/assets/edit/'); ?>"><?php echo PerchLang::get('Add asset'); ?></a>
+    <?php } // assets.create ?>
+    
     <h1><?php echo PerchLang::get('Listing all assets'); ?></h1>
 
-	<?php
+    
+
+	<?php 
 	/* ----------------------------------------- SMART BAR ----------------------------------------- */
 	   $base_path = PERCH_LOGINPATH.'/core/apps/assets/';
        include('_smart_bar.php');
@@ -16,6 +21,7 @@
 
 
         if (PerchUtil::count($assets)) {
+         
 
             if ($view == 'list') {
                 include('_asset_list.php');

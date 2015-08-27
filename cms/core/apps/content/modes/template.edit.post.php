@@ -28,7 +28,7 @@
             <?php echo $Form->label('optionsPageID', 'Copy region options from'); ?>
             <?php 
                 $opts = array();
-                $opts[] = array('label'=>'Do not copy', 'value'=>'0');
+                $opts[] = array('label'=>PerchLang::get('Do not copy'), 'value'=>'0');
   
                 $pages = $Pages->get_page_tree();
                 if (PerchUtil::count($pages)) {
@@ -41,16 +41,17 @@
                 echo $Form->select('optionsPageID', $opts, $Form->get($details, 'optionsPageID')); 
             ?>
         </div>
-        
+        <?php if (!PERCH_RUNWAY) { ?>
         <div class="field">
             <?php echo $Form->label('templateReference', 'New pages should'); ?>
             <?php 
                 $opts = array();
-        		$opts[] = array('label'=>'Reference this master page', 'value'=>1);
-        		$opts[] = array('label'=>'Copy this master page', 'value'=>0);
+        		$opts[] = array('label'=>PerchLang::get('Reference this master page'), 'value'=>1);
+        		$opts[] = array('label'=>PerchLang::get('Copy this master page'), 'value'=>0);
                 echo $Form->select('templateReference', $opts, $Form->get($details, 'templateReference')); 
             ?>
         </div>
+        <?php }// Runway ?>
 
 <?php
     if (PerchUtil::count($navgroups)) {
@@ -86,7 +87,7 @@
     </form>
 
 
-<?php include (PERCH_PATH.'/core/inc/main_end.php'); ?>
+<?php include (PERCH_PATH.'/core/inc/main_end.php'); 
 
 
 

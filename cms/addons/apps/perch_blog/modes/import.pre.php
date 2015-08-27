@@ -17,7 +17,7 @@
 
     if ($Form->submitted()) {
     	        
-        $postvars = array('file','format','type');
+        $postvars = array('file','format','type', 'section');
 		
     	$data = $Form->receive($postvars);
 
@@ -26,6 +26,10 @@
     		case 'wordpress':
     			PerchUtil::redirect($API->app_path().'/import/wordpress?'.http_build_query($data));
     			break;
+
+            case 'posterous':
+                PerchUtil::redirect($API->app_path().'/import/posterous?'.http_build_query($data));
+                break;
 
     	}
 

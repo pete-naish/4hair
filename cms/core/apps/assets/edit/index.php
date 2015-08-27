@@ -21,4 +21,3 @@
 
     include(PERCH_CORE.'/inc/btm.php');
 
-?>

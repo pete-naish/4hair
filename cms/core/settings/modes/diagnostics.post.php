@@ -35,30 +35,37 @@
         <h3><?php echo PerchLang::get('Health check'); ?></h3>
         <ul class="importables">
             <?php 
+                $product = 'Perch';
+                if (PERCH_RUNWAY) $product = 'Perch Runway';
+
                 $DB = PerchDB::fetch();
 
                 $messages = array();
+
+                if (file_exists(PerchUtil::file_path(PERCH_PATH.'/setup'))) {
+                    $messages[] = array('type'=>'failure', 'text'=>PerchLang::get('%sSetup folder is present and should be deleted%s', '<strong>', '</strong>'));
+                }
 
                 $newest_perch = $Settings->get('on_sale_version')->val();
 
                 if ($newest_perch) {
 
                     if (version_compare($newest_perch, $Perch->version, '>')) {
-                        $messages[] = array('type'=>'warning', 'text'=>PerchLang::get('%sPerch is out of date.%s You are running Perch %s and the latest is %s. %sUpdate instructions%s', '<strong>', '</strong>', $Perch->version, $newest_perch, '<a href="http://grabaperch.com/update/" class="action">', '</a>'));
+                        $messages[] = array('type'=>'warning', 'text'=>PerchLang::get('%sPerch is out of date.%s You are running %s and the latest is %s. %sUpdate instructions%s', '<strong>', '</strong>', $product.' '.$Perch->version, $newest_perch, '<a href="http://grabaperch.com/update/" class="action">', '</a>'));
                     }
 
                     if (version_compare($newest_perch, $Perch->version, '<')) {
-                        $messages[] = array('type'=>'success', 'text'=>PerchLang::get('%sAhead of the curve!%s You are running a pre-release version of Perch.', '<strong>', '</strong>'));
+                        $messages[] = array('type'=>'success', 'text'=>PerchLang::get('%sAhead of the curve!%s You are running a pre-release version of %s.', '<strong>', '</strong>', $product));
                     }
 
                     if (version_compare($newest_perch, $Perch->version, '=')) {
-                        $messages[] = array('type'=>'success', 'text'=>PerchLang::get('%sPerch is up to date%s', '<strong>', '</strong>'));
+                        $messages[] = array('type'=>'success', 'text'=>PerchLang::get('%s%s is up to date%s', '<strong>', $product, '</strong>'));
                     }
                 }
 
-                if (version_compare(PHP_VERSION, '5.3', '<')) {
+                if (version_compare(PHP_VERSION, '5.4', '<')) {
                     $messages[] = array('type'=>'warning', 'text'=>PerchLang::get('%sPHP %s is very out of date.%s %sMore info%s', '<strong>', PHP_VERSION, '</strong>', '<a href="http://docs.grabaperch.com/docs/installing-perch/php" class="action">', '</a>'));
-                }else if (version_compare(PHP_VERSION, '5.4', '<')){
+                }else if (version_compare(PHP_VERSION, '5.5', '<')){
                     $messages[] = array('type'=>'success', 'text'=>PerchLang::get('%sPHP %s version is okay, but a little out of date.%s Consider updating soon.', '<strong>', PHP_VERSION, '</strong>'));
                 }else{
                     $messages[] = array('type'=>'success', 'text'=>PerchLang::get('%sPHP %s is up to date%s', '<strong>', PHP_VERSION, '</strong>'));
@@ -98,6 +105,20 @@
                     $messages[] = array('type'=>'warning', 'text'=>PerchLang::get('%sMemory limit is low.%s Memory use is limited to %sM, which could cause problems manipulating large images.', '<strong>', '</strong>', $memory_limit));
                 }
 
+                
+
+
+                if (PERCH_RUNWAY) {
+
+                    $env_config = PerchConfig::get('env');
+
+                    if (!isset($env_config['temp_folder']) || !is_writable($env_config['temp_folder'])) {
+                        $messages[] = array('type'=>'warning', 'text'=>PerchLang::get('%sTemp folder is not writable.%s Check the path to your temp folder in your %srunway.php%s file and check permissions are set for PHP to write to it.', '<strong>', '</strong>','<code>', '</code>'));
+                        $Alert->set('notice', PerchLang::get('Your backup temp folder is not set, or is not writable.'));
+                        $errors = true;
+                    }
+
+                }
 
 
 
@@ -109,7 +130,7 @@
 
 		<h3><?php echo PerchLang::get('Summary information'); ?></h3>
         <ul>
-            <li>Perch: <?php 
+            <li><?php  echo $product.': ';
                 $vitals = array();
 
                 $vitals[] = $Perch->version; 

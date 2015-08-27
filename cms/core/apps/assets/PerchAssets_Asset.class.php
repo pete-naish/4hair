@@ -5,8 +5,8 @@ class PerchAssets_Asset extends PerchBase
     protected $table  = 'resources';
     protected $pk     = 'resourceID';
 
-    private $bucket = false;
-    private static $image_types  = array('jpg', 'png', 'gif', 'svg');
+    private $Bucket = false;
+    private static $image_types  = array('jpg', 'png', 'gif', 'svg', 'jpeg', 'webp');
     private static $doc_types    = array('doc', 'docx', 'pdf', 'odt', 'fodt', 'epub', 'mobi', 'docm', 'rtf', 'txt', 'uof', 'wpd', 'wri');
     private static $sheet_types  = array('xls', 'csv', 'ods', 'fods', 'xlsx');
     private static $audio_types  = array('mp3', 'wav', 'ogg', 'flac', 'm4a', 'wma', 'aiff', 'mp2', 'spx', 'ra', 'rm', 'mid');
@@ -16,7 +16,7 @@ class PerchAssets_Asset extends PerchBase
     public static function get_type_map()
     {
         return array(
-            'img' => array('label'=>PerchLang::get('Images'), 'exts'=>self::$image_types),
+            'img'   => array('label'=>PerchLang::get('Images'), 'exts'=>self::$image_types),
             'doc'   => array('label'=>PerchLang::get('Documents'), 'exts'=>self::$doc_types),
             'sheet' => array('label'=>PerchLang::get('Spreadsheets'), 'exts'=>self::$sheet_types),
             'audio' => array('label'=>PerchLang::get('Audio'), 'exts'=>self::$audio_types),
@@ -29,15 +29,13 @@ class PerchAssets_Asset extends PerchBase
     public function thumb_url()
     {
     	if ($this->thumb()) {
-    		$Perch = Perch::fetch();
-    		$bucket = $Perch->get_resource_bucket($this->resourceBucket());
-    		return $bucket['web_path'].'/'.$this->thumb();
+            $Bucket = PerchResourceBuckets::get($this->resourceBucket());
+    		return $Bucket->get_web_path().'/'.$this->thumb();
     	}
 
         if ($this->is_svg()) {
-            $Perch = Perch::fetch();
-            $bucket = $Perch->get_resource_bucket($this->resourceBucket());
-            return $bucket['web_path'].'/'.$this->resourceFile();
+            $Bucket = PerchResourceBuckets::get($this->resourceBucket());
+            return $Bucket->get_web_path().'/'.$this->resourceFile();
         }
     }
 
@@ -82,7 +80,7 @@ class PerchAssets_Asset extends PerchBase
 
     public function get_type()
     {
-        $type = $this->resourceType();
+        $type = strtolower($this->resourceType());
 
         if (in_array($type, self::$image_types))  return 'image';
         if (in_array($type, self::$doc_types))    return 'doc';
@@ -96,7 +94,7 @@ class PerchAssets_Asset extends PerchBase
 
     static function get_type_from_filename($filename)
     {
-        $type = PerchUtil::file_extension($filename);
+        $type = strtolower(PerchUtil::file_extension($filename));
         
         if (in_array($type, self::$image_types))  return 'image';
         if (in_array($type, self::$doc_types))    return 'doc';
@@ -110,7 +108,7 @@ class PerchAssets_Asset extends PerchBase
 
     public function is_svg()
     {
-        return $this->resourceType()=='svg';
+        return strtolower($this->resourceType())=='svg';
     }
 
 
@@ -137,7 +135,7 @@ class PerchAssets_Asset extends PerchBase
                 $this->update($data);
             }
         }else{
-            $this->mark_as_awol();
+            //$this->mark_as_awol();
         }
     }
 
@@ -154,6 +152,15 @@ class PerchAssets_Asset extends PerchBase
         return true;
     }
 
+    public function mark_as_library()
+    {
+        $this->update(array('resourceInLibrary'=>'1'));
+
+        // children
+        $Assets = new PerchAssets_Assets($this->api);
+        $Assets->mark_children_as_library($this->id());
+    }
+
     /**
      * Does the file exist on the file system?
      * Initially just proxies file_exists() but will get more complex with CDN support
@@ -162,6 +169,9 @@ class PerchAssets_Asset extends PerchBase
      */
     protected function exists() 
     {
+        $Bucket = $this->get_bucket();
+        if ($Bucket->is_remote()) return true;
+        
         return file_exists($this->file_path());
     }
 
@@ -171,8 +181,8 @@ class PerchAssets_Asset extends PerchBase
      */
     public function file_path()
     {
-        $bucket = $this->get_bucket();
-        return PerchUtil::file_path($bucket['file_path'].'/'.$this->resourceFile());
+        $Bucket = $this->get_bucket();
+        return PerchUtil::file_path($Bucket->get_file_path().'/'.$this->resourceFile());
     }
 
     /**
@@ -181,8 +191,8 @@ class PerchAssets_Asset extends PerchBase
      */
     public function web_path()
     {
-        $bucket = $this->get_bucket();
-        return $bucket['web_path'].'/'.$this->resourceFile();
+        $Bucket = $this->get_bucket();
+        return $Bucket->get_web_path().'/'.$this->resourceFile();
     }
 
     /**
@@ -191,12 +201,11 @@ class PerchAssets_Asset extends PerchBase
      */
     public function get_bucket()
     {
-        if ($this->bucket) return $this->bucket;
+        if ($this->Bucket) return $this->Bucket;
 
-        $Perch  = Perch::fetch();
-        $this->bucket = $Perch->get_resource_bucket($this->resourceBucket());
+        $this->Bucket = PerchResourceBuckets::get($this->resourceBucket());
 
-        return $this->bucket;
+        return $this->Bucket;
     }
 
     /**
@@ -218,7 +227,11 @@ class PerchAssets_Asset extends PerchBase
     {
         $file_path = $this->file_path();
         $out = array();
-        $out['resourceFileSize'] = filesize($file_path);
+        $out['resourceFileSize'] = 0;
+        
+        if (file_exists($file_path)) {
+            $out['resourceFileSize'] = filesize($file_path);
+        }
 
         if ($this->is_image() && $out['resourceFileSize']>0) {
             $Image = new PerchImage;
@@ -268,8 +281,11 @@ class PerchAssets_Asset extends PerchBase
                 }
             }
         }else{
-            $out['resourceMimeType'] = $this->get_mime_type();
+            $out['resourceMimeType'] = PerchUtil::get_mime_type($this->file_path());
         }
+
+        if (isset($out['resourceWidth']))  $out['resourceWidth']  = (int)$out['resourceWidth'];
+        if (isset($out['resourceHeight'])) $out['resourceHeight'] = (int)$out['resourceHeight'];
 
         return $out;
     }
@@ -280,7 +296,7 @@ class PerchAssets_Asset extends PerchBase
      */
     public function is_image()
     {
-        return in_array($this->resourceType(), self::$image_types);
+        return in_array(strtolower($this->resourceType()), self::$image_types);
     }
 
     /**
@@ -309,8 +325,13 @@ class PerchAssets_Asset extends PerchBase
         $out['thumbwidth']  = $this->thumb_display_width();
         $out['thumbheight'] = $this->thumb_display_height();
 
-        $out['has_thumb'] = ($out['thumb']? true : false);
-       
+        //$out['has_thumb'] = ($out['thumb']? true : false);
+        $out['has_thumb'] = ($this->is_image()? true : false);
+
+        $out['orientation'] = 'landscape';
+
+        if ($out['thumbwidth']<$out['thumbheight']) $out['orientation'] = 'portrait';
+        if ($out['thumbwidth']==$out['thumbheight']) $out['orientation'] = 'square';
 
         $out['display_filesize'] = $this->file_size();
 
@@ -359,12 +380,16 @@ class PerchAssets_Asset extends PerchBase
             $out['sizes']['thumb']['path'] = $Thumb->resourceFile();
         }
 
-        
-        
-
-
         return $out;
 
+    }
+
+    public function in_use() 
+    {
+        $sql = 'SELECT COUNT(*) FROM '.PERCH_DB_PREFIX.'resource_log WHERE resourceID='.$this->db->pdb($this->id());
+        $count = $this->db->get_count($sql);
+
+        return ($count > 0);
     }
 
 

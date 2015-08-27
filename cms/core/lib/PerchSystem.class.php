@@ -2,15 +2,27 @@
 
 class PerchSystem
 {
-    private static $search_handlers           = array();
-    private static $template_vars             = array();
-    private static $feathers                  = array();
-    private static $template_handlers         = array();
+    private static $search_handlers       = array();
+    private static $admin_search_handlers = array();
+    private static $bucket_handlers       = array();
+    private static $template_vars         = array();
+    private static $attribute_vars        = array();
+    private static $feathers              = array();
+    private static $template_handlers     = array();
+    private static $RoutedPage            = false;
+    private static $Page                  = false;
     
     public static function set_page($page)
     {
         $Perch = Perch::fetch();
-        $Perch->set_page($page);
+
+        if (PERCH_RUNWAY && $page instanceof PerchRoutedPage) {
+            $Perch->set_page($page->path);
+            self::$RoutedPage = $page;
+        }else{
+            $Perch->set_page($page);    
+        }
+        
         $Content = PerchContent::fetch();
         $Content->clear_cache();
     }
@@ -23,16 +35,46 @@ class PerchSystem
         }
         return $Perch->get_page();
     }
+
+    public static function set_page_object(PerchContent_Page $Page)
+    {
+        self::$Page = $Page;
+    }
+
+    public static function get_page_object()
+    {
+        return self::$Page;
+    }
     
     public static function register_search_handler($className)
     {
-        self::$search_handlers[] = $className;
+        if (!in_array($className, self::$search_handlers)) self::$search_handlers[] = $className;
         return true;
     }
     
-    public static function get_registered_search_handlers()
+    public static function register_admin_search_handler($className)
     {
+        if (!in_array($className, self::$admin_search_handlers)) self::$admin_search_handlers[] = $className;
+        return true;
+    }
+
+    public static function get_registered_search_handlers($admin=false)
+    {
+        if ($admin) {
+            return self::$admin_search_handlers;
+        }
         return self::$search_handlers;
+    }
+
+    public static function register_bucket_handler($ref, $className)
+    {
+        self::$bucket_handlers[$ref] = $className;
+        return true;
+    }
+    
+    public static function get_registered_bucket_handlers()
+    {
+        return self::$bucket_handlers;
     }
 
     public static function register_feather($className)
@@ -89,6 +131,41 @@ class PerchSystem
         return self::$template_vars;
     }
 
+
+    public static function get_url_var($var)
+    {
+        if (self::$RoutedPage && isset(self::$RoutedPage->args[$var])) {
+            return self::$RoutedPage->args[$var];
+        }
+        return false;
+    }
+
+    public static function set_attr_var($var, $value=false)
+    {
+        self::$attribute_vars[$var] = $value;
+    }
+
+    public static function set_attr_vars($vars)
+    {
+        if (PerchUtil::count($vars)) {
+            self::$attribute_vars = array_merge(self::$attribute_vars, $vars);
+        }
+    }
+
+    public static function get_attr_var($var)
+    {
+        if (isset(self::$attribute_vars[$var])) {
+            return self::$attribute_vars[$var];
+        }
+        
+        return false;
+    }
+    
+    public static function get_attr_vars()
+    {
+        return self::$attribute_vars;
+    }
+
     public static function get_helper_js()
     {
         $Settings = PerchSettings::fetch();
@@ -133,6 +210,3 @@ class PerchSystem
         }
     }
 }
-
-
-?>

@@ -15,6 +15,9 @@ class PerchImage
 
     // Sharpening
     private $sharpening = 4;
+
+    // Progressive JPEGs
+    private $progressive_jpeg = true;
     
     private $box_constrain = true;
     
@@ -29,6 +32,10 @@ class PerchImage
         if (strtolower(PERCH_IMAGE_LIB)=='gd' && extension_loaded('gd')) {
             $this->mode = 'gd';
         }   
+
+        if (!defined('PERCH_PROGRESSIVE_JPEG')) define('PERCH_PROGRESSIVE_JPEG', true);
+
+        $this->progressive_jpeg = PERCH_PROGRESSIVE_JPEG;
     }
 
     public function reset_defaults()
@@ -46,6 +53,8 @@ class PerchImage
     
     public function resize_image($image_path, $target_w=false, $target_h=false, $crop=false, $suffix=false)
     {
+        $Perch = Perch::fetch();
+
         $bail = false;
 
         if ($this->mode === false) return false; 
@@ -58,6 +67,13 @@ class PerchImage
         
         $info = getimagesize($image_path);
         
+        // WebP?
+        if (!is_array($info)) {
+            if ($this->is_webp($image_path)) {
+                $info = $this->get_webp_size($image_path);
+            }
+        }
+
         // SVG?
         $svg = false;
         if (!is_array($info)) {
@@ -215,8 +231,7 @@ class PerchImage
             if ($crop_h) $out['h'] = (int) $crop_h;
         }
 
-        
-        
+                
         // Check we're not upsizing
         if ($crop) {
             if ($crop_w > $image_w || $crop_h > $image_h) {
@@ -238,6 +253,9 @@ class PerchImage
                 $bail = true;
             }
         }
+
+        
+
         
         // Bail? 
         if ($bail) {
@@ -247,6 +265,8 @@ class PerchImage
             // reset sizes
             $out['w'] = (int) $image_w;
             $out['h'] = (int) $image_h;
+
+            $Perch->event('assets.create_image', new PerchAssetFile($out));
             return $out;
         }
         
@@ -276,9 +296,62 @@ class PerchImage
         
         PerchUtil::set_file_permissions($save_as);
 
+        $Perch->event('assets.create_image', new PerchAssetFile($out));
+
         if ($r) return $out;
         
         return false;
+    }
+
+    public function get_resize_profile($image_path)
+    {
+        $info = getimagesize($image_path);
+        
+        // WebP?
+        if (!is_array($info)) {
+            if ($this->is_webp($image_path)) {
+                $info = $this->get_webp_size($image_path);
+            }
+        }
+
+        // SVG?
+        $svg = false;
+        if (!is_array($info)) {
+            // $svg gets populated with the mime type if it's an SVG
+            $svg = $this->is_svg($image_path);
+            if ($svg) {
+                $info = $this->get_svg_size($image_path);
+            }
+        }
+
+        if (!is_array($info)) return false;
+        
+        $save_as = $image_path;
+       
+        $image_w = $info[0];
+        $image_h = $info[1];
+
+        $new_w = $image_w;
+        $new_h = $image_h;
+        
+        
+        // Prepare returned array
+        $out              = array();
+        $out['w']         = (int) $new_w;
+        $out['h']         = (int) $new_h;
+        $out['file_path'] = $save_as;
+        $parts            = explode(DIRECTORY_SEPARATOR, $save_as);
+        $out['file_name'] = array_pop($parts);
+        $out['web_path']  = str_replace(PERCH_RESFILEPATH.DIRECTORY_SEPARATOR, PERCH_RESPATH.'/', $save_as);
+        $out['density']   = $this->density;
+
+
+        // If SVG, we can return at this point.
+        if ($svg) {
+            $out['mime'] = $svg;
+        }
+        
+        return $out;
     }
     
     
@@ -299,7 +372,6 @@ class PerchImage
         $file_ex = '.'.PerchUtil::file_extension($image_path);
         return str_replace($file_ex, $suffix.$file_ex, $image_path);
         
-        //return preg_replace('/(\.jpg|\.jpeg|\.gif|.png)\b/', $suffix.'$1', $image_path);
     }
     
     public function set_quality($quality)
@@ -357,6 +429,13 @@ class PerchImage
         return false;
     }
 
+    public function is_webp($image_path)
+    {
+        return false; // disabled for now. PHP isn't ready for WebP.
+        // stop-gap
+        return PerchUtil::file_extension($image_path)=='webp';
+    }
+
     public function get_svg_size($image_path) 
     {
         if (class_exists('SimpleXMLElement')) {
@@ -375,6 +454,18 @@ class PerchImage
             
         }
         return array(0=>150, 1=>150, 'w'=>150, 'h'=>150, 'mime'=>'image/svg+xml');
+    }
+
+    public function get_webp_size($image_path)
+    {
+        if (function_exists('imagecreatefromwebp')) {
+            $orig_image = imagecreatefromwebp($image_path);           
+            $out = array();
+            $out[0] = imagesx($orig_image);
+            $out[1] = imagesy($orig_image);
+            return $out;    
+        }
+        return false;
     }
 
     public function parse_file_name($image_path)
@@ -439,13 +530,18 @@ class PerchImage
     {   
         //PerchUtil::debug("Actual resize: w$new_w h$new_h @{$this->density}x", 'error');
 
-        $info = getimagesize($image_path);
-        if (!is_array($info)) return false;
-        
-        $image_w = $info[0];
-        $image_h = $info[1];
-        $mime    = $info['mime'];
-        
+        if ($this->is_webp($image_path)) {
+            $mime    = 'image/webp';
+        }else{
+            $info = getimagesize($image_path);
+            if (!is_array($info)) return false;
+            
+            $image_w = $info[0];
+            $image_h = $info[1];
+            $mime    = $info['mime'];
+        }
+
+      
         $crop    = false;
         if ($crop_w != 0 && $crop_h != 0) $crop = true;
         
@@ -457,6 +553,11 @@ class PerchImage
             if ($crop) $crop_image = imagecreate($crop_w, $crop_h);
         }
         
+        //PerchUtil::debug('Image is true colour? '. (imageistruecolor($new_image) ? 'YES' : 'NO'), 'notice');
+
+        $real_save_as = $save_as;
+        $save_as = tempnam(PERCH_RESFILEPATH, '_gd_tmp_');
+
         
         switch ($mime) {
             case 'image/jpeg':
@@ -472,6 +573,12 @@ class PerchImage
                 if ($this->sharpening) {
                     $new_image = $this->sharpen_with_gd($new_image, $this->sharpening);
                 }
+
+                // progressive jpg?
+                if ($this->progressive_jpeg) {
+                    imageinterlace($new_image, 1);    
+                }
+                
                 
                 if ($crop) {
                     imagecopy($crop_image, $new_image, 0, 0, $crop_x, $crop_y, $new_w, $new_h);
@@ -535,6 +642,41 @@ class PerchImage
                 
                 break;
             
+            case 'image/webp':
+                $orig_image = imagecreatefromwebp($image_path);           
+
+                $image_w = imagesx($orig_image);
+                $image_h = imagesy($orig_image);
+
+                imagealphablending($new_image, false);
+                imagesavealpha($new_image, true);
+                          
+                if (function_exists('imagecopyresampled')) {
+                    imagecopyresampled($new_image, $orig_image, 0, 0, 0, 0, $new_w, $new_h, $image_w, $image_h);
+                }else{
+                    imagecopyresized($new_image, $orig_image, 0, 0, 0, 0, $new_w, $new_h, $image_w, $image_h);
+                }
+
+                // sharpen
+                if ($this->sharpening) {
+                    $colour = imagecolorat($new_image, 0, 0);
+                    $new_image = $this->sharpen_with_gd($new_image, $this->sharpening);
+                    imagesetpixel($new_image, 0, 0, $colour);
+                }
+
+                if ($crop) {                    
+                    imagealphablending($crop_image, false);
+                    imagesavealpha($crop_image, true);
+                    
+                    imagecopy($crop_image, $new_image, 0, 0, $crop_x, $crop_y, $new_w, $new_h);
+                    imagewebp($crop_image, $save_as);
+                }else{
+                    imagewebp($new_image, $save_as);
+                }
+                
+                break;
+
+
             default: 
                 $orig_image = imagecreatefromjpeg($image_path);
                 break;
@@ -547,6 +689,9 @@ class PerchImage
         if (isset($orig_image)) unset($orig_image);
         if (isset($new_image))  unset($new_image);
         if (isset($crop_image)) unset($crop_image);
+
+        copy($save_as, $real_save_as);
+        unlink($save_as);
         
         return $mime;
         
@@ -614,6 +759,9 @@ class PerchImage
         $crop    = false;
         if ($crop_w != 0 && $crop_h != 0) $crop = true;
         
+        $real_save_as = $save_as;
+        $save_as = tempnam(PERCH_RESFILEPATH, '_im_tmp_');
+
         $Image = new Imagick();
         $Image->readImage($image_path);
         $Image->thumbnailImage($new_w, $new_h);
@@ -629,16 +777,32 @@ class PerchImage
         
         $mime = 'image/'.$Image->getImageFormat();
 
+        // progressive jpg?
+        if (strtolower($mime) == 'image/jpeg' && $this->progressive_jpeg) {
+            $Image->setInterlaceScheme(Imagick::INTERLACE_PLANE);
+        }
+
         $Image->writeImage($save_as);
         $Image->destroy();        
+
+        copy($save_as, $real_save_as);
+        unlink($save_as);
+
+
         return $mime;    
     }
 
     private function thumbnail_file_with_imagick($file_path, $save_as, $w=0, $h=0)
     {
         try {
-            PerchUtil::debug('File: '.$file_path);
-            PerchUtil::debug('Save as: '.$save_as);
+            //PerchUtil::debug('File: '.$file_path);
+            //PerchUtil::debug('Real save as: '.$save_as);
+
+            $real_save_as = $save_as;
+            $save_as = tempnam(PERCH_RESFILEPATH, '_im_tmp_');
+
+            //PerchUtil::debug('Temp save as: '.$save_as);
+
             $Image = new Imagick($file_path.'[0]');
             $Image->setImageFormat('jpg');
 
@@ -650,8 +814,17 @@ class PerchImage
             if ($this->sharpening) {
                 ///$Image->unsharpMaskImage(0, $this->sharpening/10, $this->sharpening/2, 0.05);
             }
+
+            // progressive jpg?
+            if ($this->progressive_jpeg) {
+                $Image->setInterlaceScheme(Imagick::INTERLACE_PLANE);
+            }
+
             $Image->writeImage($save_as);
             
+            copy($save_as, $real_save_as);
+            unlink($save_as);
+            $save_as = $real_save_as;
 
             $out = array();
             $out['w']         = (int) $Image->getImageWidth()/$this->density;
@@ -664,6 +837,8 @@ class PerchImage
             $out['mime']      = 'image/'.$Image->getImageFormat();
 
             $Image->destroy(); 
+
+            
 
             return $out;
         }catch(Exception $e) {

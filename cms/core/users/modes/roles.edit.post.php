@@ -57,7 +57,7 @@
                         
                         if ($previous !== false) {
                             echo '<div class="field">';
-                            echo $Form->checkbox_set('privs-'.$previous, $Perch->app_name($previous), $opts, $existing_privs);
+                            echo $Form->checkbox_set('privs-'.$previous, $Perch->app_name($previous), $opts, $existing_privs, false);
                             echo '</div>';
                         }
                         

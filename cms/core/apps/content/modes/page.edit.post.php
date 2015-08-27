@@ -28,7 +28,7 @@
     <?php echo $Alert->output(); ?>
 
 	<ul class="smartbar">
-        <li><a href="<?php echo PERCH_LOGINPATH . '/core/apps/content/page/?id='.PerchUtil::html($Page->id());?>">Regions</a></li>
+        <li><a href="<?php echo PERCH_LOGINPATH . '/core/apps/content/page/?id='.PerchUtil::html($Page->id());?>"><?php echo PerchLang::get('Regions'); ?></a></li>
         <?php
             if ($CurrentUser->has_priv('content.pages.attributes')) {
                 echo '<li><a href="'.PERCH_LOGINPATH . '/core/apps/content/page/details/?id='.PerchUtil::html($Page->id()).'">' . PerchLang::get('Page Details') . '</a></li>';
@@ -55,7 +55,7 @@
         }
         
         $Pages->find_site_path();
-        if (!file_exists(PerchUtil::file_path(PERCH_SITEPATH.$details['pageSubpagePath']))) {
+        if (!PERCH_RUNWAY && !file_exists(PerchUtil::file_path(PERCH_SITEPATH.$details['pageSubpagePath']))) {
             $Alert->set('error', PerchLang::get('Subpage folder does not exist'));
             $Alert->output();
             PerchUtil::debug(PerchUtil::file_path(PERCH_SITEPATH.$details['pageSubpagePath']));
@@ -71,10 +71,12 @@
             <?php echo $Form->label('pagePath', 'Path'); ?>
             <?php echo $Form->text('pagePath', $Form->get($details, 'pagePath')); ?>
 
+            <?php if (!PERCH_RUNWAY) { ?>
             <div class="checkbox supplemental">
                 <?php echo $Form->checkbox('move', '1', 0); ?>
                 <?php echo $Form->label('move', 'Move the page to this location'); ?>
             </div>
+            <?php } // not Runway ?>
         </div>
 
         <div class="field">
@@ -106,8 +108,91 @@
                 echo $Form->select('pageParentID', $opts, $Form->get($details, 'pageParentID')); 
             ?>
         </div>
+        <?php
+            if (PERCH_RUNWAY) { 
+
+                echo '<h2>'.PerchLang::get('Routes').'</h2>';
+         
+
+                if (PerchUtil::count($routes)) {
+
+                    foreach($routes as $Route) {
+
+                        echo '<div class="field routes">';
+                            $id = 'routePattern_'.$Route->id();
+                            echo $Form->label($id, 'URL pattern');
+                            echo $Form->text($id, $Form->get($details, $id, $Route->routePattern()));
+                        echo '</div>';
+                    }
+                }
+
+                echo '<div class="field routes-spare">';
+                    echo $Form->label('new_pattern', 'URL pattern');
+                    echo $Form->text('new_pattern', $Form->get($details, 'new_pattern'));
+                echo '</div>';
+
+       
+
+                if (PerchUtil::count($collections)) {
+                    echo '<h2>'.PerchLang::get('Collections').'</h2>';
+
+                    echo '<div class="field">';
+                        
+                            $opts = array();
+                            $vals = explode(',', $Page->pageCollections());
+
+                            if (PerchUtil::count($collections)) {
+                                foreach($collections as $Collection) {
+                                    $opts[] = array('label'=>$Collection->collectionKey(), 'value'=>$Collection->id());
+                                }
+                            }
+                            
+                            echo $Form->checkbox_set('collections', 'Manage from this page', $opts, $vals, $class='', $limit=false);
+                        
+                        
+                        
+                    echo '</div>';
+                }
+
+            }
+
+        ?>
+
         
         <h2><?php echo PerchLang::get('Details'); ?></h2>
+
+        <?php
+            if (PERCH_RUNWAY) {
+                echo '<div class="field">';
+                    echo $Form->label('templateID', 'Master page');
+                    
+                    $opts = array();
+                    if ($ParentPage) {
+                        $templates = $PageTemplates->get_templates($ParentPage->pageSubpageTemplates());    
+                    }else{
+                        $templates = $PageTemplates->get_templates();
+                    }
+                    
+
+                    if (PerchUtil::count($templates)) {
+                        $opts = array();
+
+                        foreach($templates as $group_name=>$group) {
+                            $tmp = array();
+                            $group = PerchUtil::array_sort($group, 'label');
+                            foreach($group as $file) {
+                                $tmp[] = array('label'=>$file['label'], 'value'=>$file['id']);
+                            }
+                            $opts[$group_name] = $tmp;
+                        }
+                        $opts[PerchLang::get('General')][] = array('label'=>PerchLang::get('Local file'), 'value'=>'0');
+                    }
+
+                    echo $Form->grouped_select('templateID', $opts, $Form->get($details, 'templateID'));
+                    
+                echo '</div>';
+            }
+        ?>
 
         <div class="field">
             <?php echo $Form->label('pageAttributeTemplate', 'Attribute template'); ?>
@@ -208,8 +293,41 @@
             
             ?>
         </div>
+
+        <?php if (PERCH_RUNWAY) { ?>
+
+        <div class="field">
+            <?php
+                $opts = array();
+                
+                $vals = explode(',', $Page->pageSubpageTemplates());
+                if ($ParentPage) {  
+                    $templates = $PageTemplates->get_filtered($ParentPage->pageSubpageTemplates());
+                    if ($ParentPage->pageSubpageTemplates()=='' || $ParentPage->pageSubpageTemplates()=='*') {
+                        $opts[] = array('label'=>PerchLang::get('All'), 'value'=>'*', 'class'=>'single');    
+                    }
+                }else{
+                    $templates = $PageTemplates->get_filtered();    
+                    $opts[] = array('label'=>PerchLang::get('All'), 'value'=>'*', 'class'=>'single');
+                }
+                
+                if (PerchUtil::count($templates)) {
+                    foreach($templates as $Template) {
+                        $tmp = array('label'=>PerchUtil::filename($Template->display_name()), 'value'=>$Template->id());
+                        $opts[] = $tmp;
+                    }
+                }
+                
+                echo $Form->checkbox_set('subpage_templates', 'May use these master pages', $opts, $vals, $class='', $limit=false);
+            
+            
+            ?>
+        </div>
+
+        <?php } // runway ?>
+
         
-    
+        <?php if (!PERCH_RUNWAY) { ?>
         <div class="field last">
             <?php echo $Form->label('pageSubpagePath', 'Subpage folder'); ?>
             <?php 
@@ -218,6 +336,7 @@
                 echo $Form->text('pageSubpagePath', $Form->get($details, 'pageSubpagePath')); 
             ?>
         </div>
+        <?php } // Runway ?>
 <?php
     } // content.pages.configure
 ?>

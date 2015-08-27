@@ -34,7 +34,7 @@
                     }else{
                         echo PERCH_LOGINPATH . '/core/apps/content/page/?id='.PerchUtil::html($Region->pageID());
                     }
-                ?>">Regions</a> 
+                ?>"><?php echo PerchLang::get('Regions'); ?></a> 
 				<span class="sep icon"></span> 
 				<a href="<?php echo PERCH_LOGINPATH . '/core/apps/content/edit/?id='.PerchUtil::html($id);?>"><?php echo PerchUtil::html($Region->regionKey()); ?></a>
 				</span>
@@ -46,7 +46,7 @@
 
                 if ($Region->regionMultiple()) {
                     echo '<li class="fin">';
-                    echo '<a href="'.PERCH_LOGINPATH . '/core/apps/content/reorder/region/?id='.PerchUtil::html($Region->id()).'" class="icon reorder">Reorder</a>';
+                    echo '<a href="'.PERCH_LOGINPATH . '/core/apps/content/reorder/region/?id='.PerchUtil::html($Region->id()).'" class="icon reorder">'.PerchLang::get('Reorder').'</a>';
                     echo '</li>';
                 }
 			?>
@@ -104,7 +104,7 @@
         <?php
             // Used by column_ids and sortField
             $Template = new PerchTemplate('content/'.$Region->regionTemplate(), 'content');
-            $tags   = $Template->find_all_tags('content');
+            $tags   = $Template->find_all_tags('(content|categories)');
 
         ?>
 
@@ -251,22 +251,7 @@
         <div class="field">
             <?php echo $Form->label('regionTemplate', 'Template'); ?>
             <?php         
-                $opts = array();
-                $templates = $Regions->get_templates(false, true);
-
-                if (PerchUtil::count($templates)) {
-                    $opts = array();
-                    foreach($templates as $group_name=>$group) {
-                        $tmp = array();
-                        $group = PerchUtil::array_sort($group, 'label');
-                        foreach($group as $file) {
-                            $tmp[] = array('label'=>$file['label'], 'value'=>$file['path']);
-                        }
-                        $opts[$group_name] = $tmp;
-                    }
-                }
-
-                echo $Form->grouped_select('regionTemplate', $opts, $Form->get(array('regionTemplate'=>$Region->regionTemplate()), 'regionTemplate', 0));
+                echo $Form->grouped_select('regionTemplate', $Regions->get_templates(false, true), $Form->get(array('regionTemplate'=>$Region->regionTemplate()), 'regionTemplate', 0));
                 
             ?>
         </div>
@@ -282,4 +267,4 @@
         </p>
     </form>
     
-<?php include (PERCH_PATH.'/core/inc/main_end.php'); ?>
+<?php include (PERCH_PATH.'/core/inc/main_end.php'); 

@@ -86,5 +86,3 @@ class PerchRepeater
 		return false;
 	}
 }
-
-?>

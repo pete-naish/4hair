@@ -51,7 +51,7 @@
         ?>
         <li class="fin">
             <form method="get" action="?" class="search">
-                <input name="q" type="text" placeholder="Search" type="required" class="search" value="<?php
+                <input name="q" type="text" placeholder="<?php echo PerchLang::get('Search'); ?>" type="required" class="search" value="<?php
                     if ($term) {
                         echo PerchUtil::html($term, true);
                     }
@@ -70,3 +70,8 @@
         </li>
     </ul>
     <?php echo $Alert->output(); ?>
+    <?php
+        if (isset($filters) && isset($filters['bucket'])) {
+            echo '<script>head.ready(function(){Perch.UI.Assets.setTargetBucket("'.PerchUtil::html($filters['bucket'], true).'");});</script>';
+        }
+    ?>

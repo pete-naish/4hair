@@ -15,7 +15,16 @@
     
     <?php echo $Alert->output(); ?>
 
-    <h2><?php echo PerchLang::get('Details'); ?></h2>
+    <h2 class="h2"><?php echo PerchLang::get('Details'); ?>
+
+        <?php
+            if (is_object($Asset) && $CurrentUser->has_priv('assets.delete')) {
+        ?>
+            <a href="<?php echo PerchUtil::html(PERCH_LOGINPATH); ?>/core/apps/assets/delete/?id=<?php echo $Asset->id(); ?>" class="delete action <?php  echo ($Asset->in_use() ? '' : 'inline-delete'); ?>" data-msg="<?php echo PerchLang::get('Delete this asset?'); ?>"><?php echo PerchLang::get('Delete'); ?></a>
+        <?php
+            } // assets.delete
+        ?>
+    </h2>
     <form method="post" action="<?php echo PerchUtil::html($Form->action()); ?>" class="sectioned" <?php echo $Form->enctype(); ?>>
 
         <div class="field">
@@ -23,6 +32,7 @@
             <?php echo $Form->text('resourceTitle', $Form->get($details, 'resourceTitle')); ?>
         </div>
 
+<?php if ($CurrentUser->has_priv('assets.create')) { ?>
         <div class="field">
         <?php
             echo $Form->label('image', 'File');
@@ -40,6 +50,25 @@
         ?>
         </div>
 
+        <?php if (!$Asset) { ?>
+        <div class="field">
+        <?php
+            echo $Form->label('resourceBucket', 'Save in bucket');
+            $opts = array();
+            $buckets = $Assets->get_available_buckets();
+            if (PerchUtil::count($buckets)) {
+                foreach ($buckets as $bucket) {
+                    $opts[] = array('label' => ucfirst($bucket), 'value' => $bucket);
+                }
+            }else{
+                $opts[] = array('label' => PerchLang::get('Default'), 'value' => 'default');
+            }
+            echo $Form->select('resourceBucket', $opts, $Form->get($details, 'resourceBucket'));
+        ?>
+        </div>
+        <?php } // if !Asset ?>
+
+<?php } // assets.create ?>
 
         <div class="field">
             <?php echo $Form->label('tags', 'Tags'); ?>
@@ -59,6 +88,7 @@
             <?php echo $Form->checkbox('resourceInLibrary', '1', $Form->get($details, 'resourceInLibrary')); ?>
             <?php echo $Form->hint(PerchLang::get('Library assets are kept, even if unused.')); ?>
         </div>
+
 
 
         <p class="submit">

@@ -1,4 +1,5 @@
 <?php
+	header('Content-Type: application/javascript');
 	include(__DIR__ . '/../inc/pre_config.php');
 	include(__DIR__ . '/../../config/config.php');
 	include(PERCH_CORE . '/inc/loader.php');
@@ -36,6 +37,10 @@
 		'Dimensions',
 		'Size',
 		'Add a tag',
+		'Are you sure?',
+		'Yes',
+		'No',
+		'Bucket',
 	);
 
 	echo "Perch.Lang.init({\n\t";

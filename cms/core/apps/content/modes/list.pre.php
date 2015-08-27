@@ -3,7 +3,7 @@
     $Regions    = new PerchContent_Regions;
 
 	$expand_list = array(0);
-    
+
     // Find new pages and initialise
     $Pages->order_new_pages();
     
@@ -90,11 +90,19 @@
 				
 			default:
 				$pages = $Pages->get_page_tree();
+
+				if (PERCH_RUNWAY && PerchUtil::count($pages)==0) {
+					$Pages->create_defaults($CurrentUser);
+					$pages = $Pages->get_page_tree_collapsed(array(0));
+				}
+				
 				break;
 			
 		}
    	}
     
+
+
 
     // Preload regions
 	if ($filter=='all') $Regions->preload_regions();
@@ -124,6 +132,3 @@
 	    }
     }
 
-
-
-?>

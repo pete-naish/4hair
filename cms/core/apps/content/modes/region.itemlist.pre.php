@@ -27,5 +27,3 @@
 	}
 
     $cols = $Region->get_edit_columns();
-    
-?>

@@ -35,18 +35,32 @@
         $values = array();
         $opts   = array();
         $opts[] = array('label'=>'WordPress','value'=>'wordpress');
+        $opts[] = array('label'=>'Posterous','value'=>'posterous');
         
         echo $Form->select_field('type', 'File type', $opts, '');
         
 
         $values = array();
         $opts   = array();
-        $opts[] = array('label'=>'Textile','value'=>'textile');
         $opts[] = array('label'=>'HTML','value'=>'html');
+        $opts[] = array('label'=>'Textile','value'=>'textile');
+        
         
 echo $Form->hint('If you have a lot of content to import, you expect this to take a little while.');
         
         echo $Form->select_field('format', 'Format posts as', $opts, '');
+
+
+        $Sections = new PerchBlog_Sections;
+        $sections = $Sections->all();
+        if (PerchUtil::count($sections)>1) {
+            $opts = array();
+            foreach($sections as $section) {
+                $opts[] = array('label'=>$section->sectionTitle(), 'value'=>$section->id());        
+            }  
+            echo $Form->select_field('section', 'Section', $opts, '');  
+        }
+
         
 
 

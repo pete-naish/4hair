@@ -5,6 +5,12 @@
     $Page  = false;
 
     $NavGroups  = new PerchContent_NavGroups;
+    $PageTemplates  = new PerchContent_PageTemplates;
+
+    if (PERCH_RUNWAY) {
+        $PageRoutes  = new PerchPageRoutes();
+        $Collections = new PerchContent_Collections();
+    }
 
     // Find the page
     if (isset($_GET['id']) && is_numeric($_GET['id'])) {
@@ -22,6 +28,7 @@
         PerchUtil::redirect(PERCH_LOGINPATH . '/core/apps/content/');
     }
 
+    $ParentPage = $Pages->find($Page->pageParentID());
    
     $Form = new PerchForm('editpage');
 
@@ -32,14 +39,38 @@
     
     if ($Form->posted() && $Form->validate()) {
     	$postvars = array('pagePath', 'pageSubpagePath', 'pageHidden', 'pageAccessTags', 'pageAttributeTemplate');
+
+        if (PERCH_RUNWAY) {
+            $postvars[] = 'templateID';
+        }
+
+
     	$data = $Form->receive($postvars);
     	
     	if (!isset($data['pageHidden'])) $data['pageHidden'] = '0';
     	
-    	$data['pageSubpagePath'] = '/'.ltrim($data['pageSubpagePath'], '/');
-    	$_POST['pageSubpagePath'] = $data['pageSubpagePath'];
+        if (!PERCH_RUNWAY) {
+            if (!isset($data['pageSubpagePath'])) $data['pageSubpagePath'] = false;
+            $data['pageSubpagePath'] = '/'.ltrim($data['pageSubpagePath'], '/');
+            $_POST['pageSubpagePath'] = $data['pageSubpagePath'];
+        }
 
         $data['pageModified'] = date('Y-m-d H:i:s');
+
+        if (isset($_POST['collections']) && PerchUtil::count($_POST['collections'])) {
+            $collections = $_POST['collections'];
+            $new_collections = array();
+            foreach($collections as $collection) {
+                $collection = trim($collection);               
+                $new_collections[] = (int) $collection;
+            }
+            
+            if (PerchUtil::count($new_collections)) {
+                $data['pageCollections'] = implode(',', $new_collections);
+            }
+        }else{
+            $data['pageCollections'] = '';
+        }
 
     	
     	if (isset($_POST['subpage_roles']) && PerchUtil::count($_POST['subpage_roles'])) {
@@ -62,6 +93,28 @@
     	    $data['pageSubpageRoles'] = '';
     	}
 
+        // Subpage templates
+        if (PERCH_RUNWAY && isset($_POST['subpage_templates']) && PerchUtil::count($_POST['subpage_templates'])) {
+            $templates = $_POST['subpage_templates'];
+            $new_templates = array();
+            foreach($templates as $tpl) {
+                $tpl = trim($tpl);
+                if ($tpl=='*') {
+                    $new_templates = array('*');
+                    break;
+                }
+                
+                $new_templates[] = (int) $tpl;
+            }
+            
+            if (PerchUtil::count($new_templates)) {
+                $data['pageSubpageTemplates'] = implode(',', $new_templates);
+            }
+        }else{
+            $data['pageSubpageTemplates'] = '';
+        }
+
+
         $error = false;
 
         // Move page?
@@ -80,6 +133,16 @@
     
     	if (!$error) {
 
+            if (PERCH_RUNWAY) {
+                $PageTemplate = $PageTemplates->find($data['templateID']);
+                if ($PageTemplate) {
+                    $data['pageTemplate'] = $PageTemplate->templatePath();    
+                }else{
+                    $data['pageTemplate'] = '';
+                }
+            }
+            
+
         	$Page->update($data);
         	
         	if (isset($_POST['pageParentID'])) {
@@ -88,9 +151,9 @@
         	    if ($parentID != $Page->pageParentID()) {
         	        $Page->update_tree_position($parentID, false, $cascade=true);
         	    }
-        	    
+        	   
         	}
-        	
+
         	
         	// update regions on this page
         	$Regions = new PerchContent_Regions;
@@ -114,6 +177,43 @@
                 $Page->remove_from_navgroups();
             }
        	
+
+            if (PERCH_RUNWAY) {
+
+                // routes
+                $routes = $Form->find_items('routePattern_');
+                if (count($routes)) {
+                    foreach($routes as $routeID=>$pattern) {
+                        $PageRoute = $PageRoutes->find($routeID);
+
+                        if (!is_object($PageRoute)) continue;
+
+                        if (trim($pattern)!='') {
+                            $pattern = trim($pattern, '/');
+                            $PageRoute->update(array('routePattern'=>$pattern));
+                        }else{
+                            $PageRoute->delete();
+                        }
+                    }
+                } 
+
+                $new_routes = $Form->receive(array('new_pattern'));
+                if (count($new_routes)) {
+                    foreach($new_routes as $pattern) {
+                        if (trim($pattern)!='') {
+                            $PageRoute = $PageRoutes->create(array(
+                                'pageID'=>$Page->id(),
+                                'routePattern' => $pattern
+                                ));
+                        }
+                        
+                    }
+                }
+                $Form->reset_field('new_pattern');
+
+            }
+
+
         	
         	$Alert->set('success', PerchLang::get('Successfully updated'));
         }
@@ -133,4 +233,8 @@
     $details = $Page->to_array();
 
     $navgroups = $NavGroups->all();
-?>
+
+    if (PERCH_RUNWAY) {
+        $routes      = $PageRoutes->get_routes_for_page($Page->id()); 
+        $collections = $Collections->all();   
+    }
