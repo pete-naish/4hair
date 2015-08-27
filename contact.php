@@ -1,4 +1,5 @@
 <?php 
+  error_reporting(0);
 	$page_title = "Contact";
 	$custom_css = "y";
 	include 'inc/contact-app/headers.php';

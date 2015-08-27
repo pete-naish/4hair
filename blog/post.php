@@ -1,5 +1,6 @@
 
 <?php 
+    error_reporting(0);
 	$blog_title = "Blog";
 	include('../inc/head.php');
 	include('../inc/top.php');

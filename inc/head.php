@@ -34,7 +34,7 @@ if ($custom_css=="y") print "<link rel='stylesheet' href='/css/$page_title.css' 
 	<link rel="stylesheet" type="text/css" media="all" href="/css/ie7.css" />
 <![endif]-->
 
-<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
 <link rel="apple-touch-icon-precomposed" href="/images/apple-touch-icon-precomposed.png" />
 <link rel="alternate" type="application/rss+xml" title="RSS" href="/offers-rss.php" />

@@ -1,4 +1,5 @@
-<?php 
+<?php
+  error_reporting(0);
 	$page_title = "Blog";
 	include('../inc/head.php');
 	include('../inc/top.php');

@@ -1,4 +1,5 @@
 <?php 
+    error_reporting(0);
 	$page_title = "Blog Archive";
   $blog_title = "Blog";
 	include('../inc/head.php');

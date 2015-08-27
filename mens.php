@@ -1,4 +1,5 @@
 <?php 
+  error_reporting(0);
 	$page_title = "Mens";
 	include('inc/head.php');
 	include('inc/top.php');

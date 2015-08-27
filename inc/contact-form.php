@@ -1,4 +1,5 @@
 <?php
+error_reporting(0);
 /* 
 -----------------------------------------------------------------------------------------------------
 Make sure the 'contact-app' directory is located inside the same directory where the form script is

@@ -1,4 +1,5 @@
 <?php 
+    error_reporting(0);
 	$page_title = "Hairdressing";
 	$page_type = "Womens";
 	include('../inc/head.php');

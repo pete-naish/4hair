@@ -1,4 +1,5 @@
 <?php
+error_reporting(0);
 include 'headers.php';
 
 if(isSet($_POST['security_code'])) {

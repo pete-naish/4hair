@@ -1,4 +1,5 @@
-<?php 
+<?php
+    error_reporting(0);
 	$page_title = "Home";
 	include('inc/head.php');
 	include('inc/top.php');
@@ -11,7 +12,7 @@
     <!-- nivo_slider -->
     <div class="nivo">
         <div id="slider" class="nivoSlider">
-						<?php perch_content('Gallery Images'); ?>
+			<?php perch_content('Gallery Images'); ?>
         </div>
     </div>
     <!-- /nivo_slider -->

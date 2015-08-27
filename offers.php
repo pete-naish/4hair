@@ -1,4 +1,5 @@
 <?php 
+  error_reporting(0);
 	$page_title = "Offers";
 	$custom_css ="y";
 	include('inc/head.php');

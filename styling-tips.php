@@ -1,4 +1,5 @@
 <?php 
+    error_reporting(0);
 	$page_title = "Styling Tips";
 	include('inc/head.php');
 	include('inc/top.php');

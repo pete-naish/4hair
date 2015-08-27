@@ -1,4 +1,5 @@
 <?php 
+    error_reporting(0);
 	include('cms/runtime.php');
 	echo '<'.'?xml version="1.0"?'.'>';
 ?>
