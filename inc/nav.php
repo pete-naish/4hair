@@ -12,7 +12,7 @@
 	   	<li><a href="/beauty" class='cufon <?php if ($page_title=="Beauty") print "current"; ?>' title="Beauty">Beauty</a></li>
 		<li><a href="/offers" class='cufon <?php if ($page_title=="Offers") print "current"; ?>' title="Offers">Offers</a></li>
 			<li><a href="/styling-tips" class='cufon <?php if ($page_title=="Styling Tips") print "current"; ?>' title="Styling Tips">Styling Tips</a></li>
-      <li><a href="/blog/" class='cufon <?php if ($page_title=="Blog" || $blog_title=="Blog") print "current"; ?>' title="Blog">Blog</a></li>
+      <!-- <li><a href="/blog/" class='cufon <?php //if ($page_title=="Blog" || $blog_title=="Blog") print "current"; ?>' title="Blog">Blog</a></li> -->
       <li><a href="/mens" class='cufon <?php if ($page_title=="Mens") print "current"; ?>' title="Men's">Men's</a></li>
 			<li><a href="/team" class='cufon <?php if ($page_title=="Team") print "current"; ?>' title="The team">The Team</a></li>
       <li><a href="/contact" class='cufon <?php if ($page_title=="Contact") print "current"; ?>' title="Contact">Contact</a></li>
