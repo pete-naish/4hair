@@ -1,13 +1,12 @@
 <script type="text/javascript" src="/js/jquery.easing.1.3.js"></script>
+<script type="text/javascript" src="/js/json.js"></script>
 <script type="text/javascript" src="/js/jquery.nivo.slider.js"></script>
 <script type="text/javascript" src="/js/twitter.js"></script>
-<script type="text/javascript" src="/js/tweet.js"></script>
 <script type="text/javascript" src="/js/hoverIntent.js"></script>
-<script type="text/javascript" src="/js/custom.js"></script>
 <script type="text/javascript" src="/js/qtip.js"></script>
 <script type="text/javascript" src="/js/jquery.prettyPhoto.js" charset="utf-8"></script>
-<script type="text/javascript" src="/js/json.js"></script>
 <script type="text/javascript" src="/js/masonry.js"></script>
+<script type="text/javascript" src="/js/custom.js"></script>
 <?php
 if ($page_title=="Contact") print "<script type='text/javascript' src='/inc/contact-app/js/init.php'></script>\n<script type='text/javascript' src='http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAALiNILSO059QjxcTd7_OBOxRv-VDoe8LyKY6pccKCPzEfBgmvKBQZWDDY5KkdaPDPeJuSCT8e1rsKLA'></script>\n<script type='text/javascript' src='/js/gmaps.js'></script>";
 ?>
@@ -102,16 +101,7 @@ if ($page_title=="Contact") print "<script type='text/javascript' src='/inc/cont
 	  js.src = "//connect.facebook.net/en_US/all.js#appId=263769803645494&xfbml=1";
 	  fjs.parentNode.insertBefore(js, fjs);
 	}(document, 'script', 'facebook-jssdk'));
-	
-	// SeeVolution
-  (function()
-  {
-    var ms = document.createElement("script");
-    var site = ("https:" == document.location.protocol) ? "https://c.svlu.net/cjs.aspx" : "http://c.svlu.net/cjs.aspx";
-    ms.src = site;
-    ms.setAttribute("async", "true");
-    document.documentElement.firstChild.appendChild(ms);
-  })();
+
 	
 	//]]>
 </script>

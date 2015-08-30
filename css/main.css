@@ -1030,15 +1030,22 @@ h6{	font-size:12px; }
 	}
 	#twitterUpdate a{ color:#FFF;}
 	#tweeter{width:0px; height:0px; text-indent:-9000px;}
-	
+	.tweet-time {
+		float: right;
+	}
+	.tweet-time a {
+		color: #999 !important;
+	}
+	.twitter-article + .twitter-article {
+		padding-top: 10px;
+		margin-top: 10px;
+		border-top:1px solid #222;
+	}
 	#deadTweets{
 		padding:0 0 0 60px;
 		color:#999999;
 	}
 	
-	#deadTweets li {
-		border-bottom:1px solid #222;
-	}
 	.twitterTime{ font-size:11px; display:block; clear:both;}
 	
 	.left_part_footer{
@@ -1456,6 +1463,8 @@ h4.styling-tips {
 }
 
 .fb_iframe_widget {
+	border-top: 1px solid #222;
+	padding-top: 20px;
 	margin:20px 0 0 60px;
 	overflow:hidden;
 }
