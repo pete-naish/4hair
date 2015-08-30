@@ -36,9 +36,7 @@
                 
                 <!-- about -->
                 <div class="about_quick">
-									<a class="online-booking" rel="prettyPhoto" href="https://hairtek.mylocalsalon.com/onlinebooking?iframe=true&amp;width=875&amp;height=710">Book Online Now</a> 
 
-											<p class="italic">or call <?php perch_content('Phone Number'); ?></p>
 											<p class="opening-hours"><a class="opening-hours-tip" href="/contact#opening-hours" onclick="return false;">Opening Hours</a></p>
                 </div>
                 <!-- /about -->

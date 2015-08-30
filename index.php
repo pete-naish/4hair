@@ -31,7 +31,7 @@
     <!-- HOME SLOGAN -->
 		<?php perch_content('Tagline'); ?>
     <!-- /HOME SLOGAN -->
-		<div class="flash"><a rel="prettyPhoto" href="https://hairtek.mylocalsalon.com/onlinebooking?iframe=true&amp;width=875&amp;height=710">You can now book your appointments online! Click here to book in minutes!</a></div>
+		<div class="flash"><a title="Download Our Price List (PDF)" href="/cms/resources/4-hair-price-list-jan-2012.pdf">Download Our Price List</a></div>
 		<div class="blockWrapper">
 		<?php perch_content('Content Blocks'); ?>
         </div>

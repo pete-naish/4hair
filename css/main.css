@@ -82,7 +82,7 @@ h6{	font-size:12px; }
 	#top_menu ul li{
 		display:inline;
 		letter-spacing: 0.75px;
-		margin:0 5px;
+		margin:0 3px;
 		text-align:left;
 		position:relative;
 		z-index:12000;
@@ -902,7 +902,11 @@ h6{	font-size:12px; }
 	
 	#footer_menu li{
 		display:inline;
-		margin:0 5px 0 0;
+		margin: 0;
+	}
+
+	#footer_menu li + li {
+		margin-left: 2px;
 	}
 	
 	#footer_menu li a{
@@ -910,10 +914,6 @@ h6{	font-size:12px; }
 		font-size:10px;
 		text-transform:uppercase;
 		padding:3px;
-	}
-	
-	#footer_menu li.first{
-		margin-left:0;
 	}
 	
 	#footer_menu li.first a {
@@ -943,7 +943,7 @@ h6{	font-size:12px; }
 	
 	p.opening-hours {
 		display:inline;
-		margin: 10px 0 0 30px;
+		margin: 10px 0 20px;
 		font-family:droid, times, serif;
 	}
 	
