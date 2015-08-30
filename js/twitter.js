@@ -20,7 +20,7 @@ $(document).ready(function () {
     
     // $('#deadTweets').html(loadingHTML);
      
-    $.getJSON('4_hair-tweets.txt?' + Math.random(), 
+    $.getJSON(twitterprofile + '-tweets.txt?' + Math.random(), 
         function(feeds) {
            //alert(feeds);
             var feedHTML = '';
